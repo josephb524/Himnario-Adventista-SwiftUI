@@ -12,6 +12,7 @@ import AVFoundation
 struct AudioControlView: View {
     @EnvironmentObject var playbackState: AudioPlaybackState
     @EnvironmentObject var favoritesManager: FavoritesManager
+    @ObservedObject var progressTimer = ProgressBarTimer.instance
     let himno: Himnario
     
     var body: some View {
@@ -21,13 +22,13 @@ struct AudioControlView: View {
                 Text(playbackState.himnoTitle.isEmpty ? himno.title : playbackState.himnoTitle)
                     .font(.headline)
                 Spacer()
-                Text(playbackState.trackTime)
+                Text(AudioBrain.instance.trackTime.isEmpty ? "00:00" : AudioBrain.instance.trackTime)
                     .font(.subheadline)
             }
             .padding(.horizontal)
             
             // Progress bar.
-            ProgressView(value: playbackState.progress)
+            ProgressView(value: progressTimer.progress)
                 .padding(.horizontal)
             
             // Control buttons.

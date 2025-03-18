@@ -9,11 +9,11 @@
 import Foundation
 import AVFoundation
 
-final class ProgressBarTimer: ObservableObject {
+class ProgressBarTimer: ObservableObject {
     static let instance = ProgressBarTimer()
     
     @Published var progress: Float = 0.0
-    private var timer: Timer?
+    var timer: Timer?
     
     private init() {}
     

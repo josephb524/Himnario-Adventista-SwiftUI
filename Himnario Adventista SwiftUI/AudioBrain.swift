@@ -88,7 +88,7 @@ class AudioBrain {
         }
     }
     
-    private func formatTrackTime(seconds: Int) -> String {
+    func formatTrackTime(seconds: Int) -> String {
         let minutes = seconds / 60 % 60
         let secs = seconds % 60
         return String(format: "%02i:%02i", minutes, secs)
