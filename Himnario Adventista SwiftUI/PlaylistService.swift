@@ -2,24 +2,14 @@
 //  PlaylistService.swift
 //  Himnario Adventista
 //
-//  Created by Jose Pimentel on 1/14/25.
-//  Copyright © 2025 Jose Pimentel. All rights reserved.
+//  Created by Jose Pimentel on 8/22/21.
 //
 
 import Foundation
 
-/**
- A service that decides which Audius playlist URL to fetch,
- based on coritoFavorito, isVoice, indexCorito, etc.
- */
 final class PlaylistService {
-    
     let hostService = AudiusHostService()
     
-    /**
-     Asynchronously determines which playlist URL to use
-     and calls `completion(finalURL)` once resolved.
-     */
     func findPlaylistURL(
         coritoFavorito: String,
         isVoice: Bool,
@@ -27,7 +17,6 @@ final class PlaylistService {
         completion: @escaping (String?) -> Void
     ) {
         let (playlist1, playlist2, playlist3, playlist4) = makePlaylistIds(coritoFavorito: coritoFavorito, isVoice: isVoice)
-        
         hostService.fetchAudiusHost { resolvedHost in
             let host = resolvedHost ?? "https://audius-discovery-3.altego.net"
             let (chosenPid, _) = self.selectPlaylist(
@@ -42,15 +31,13 @@ final class PlaylistService {
         }
     }
     
-    // MARK: - Private Helpers
-    
     private func makePlaylistIds(coritoFavorito: String, isVoice: Bool) -> (String, String, String, String) {
         var p1 = ""
         var p2 = ""
         var p3 = ""
         var p4 = ""
         
-        if coritoFavorito == "Viejo" {
+        if coritoFavorito == "Antiguo" {
             p1 = "lz3dl"
             p2 = "RKd3X"
             p3 = "qE3qE"
@@ -78,7 +65,6 @@ final class PlaylistService {
         playlist3: String,
         playlist4: String
     ) -> (pid: String, finalIndex: Int) {
-        
         switch indexCorito {
         case 0..<200:
             return (playlist1, indexCorito)

@@ -54,7 +54,7 @@ struct SearchBar: UIViewRepresentable {
         let searchBar = UISearchBar(frame: .zero)
         context.coordinator.searchBarInstance = searchBar // Assign the UISearchBar instance
         searchBar.delegate = context.coordinator
-        searchBar.placeholder = "Buscar palabra"
+        searchBar.placeholder = "Buscar Himno"
 
         // Create the toolbar with the Done button
         let toolbar = UIToolbar()

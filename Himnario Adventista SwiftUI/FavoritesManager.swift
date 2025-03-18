@@ -1,7 +1,14 @@
+//
+//  FavoritesManager.swift
+//  Himnario Adventista SwiftUI
+//
+//  Created by Jose Pimentel on 3/2/25.
+//
+
 import SwiftUI
 
 class FavoritesManager: ObservableObject {
-    @Published var favoriteHimnos: [Himnos] = [] {
+    @Published var favoriteHimnos: [Himnario] = [] {
         didSet {
             saveFavorites()
         }
@@ -11,7 +18,7 @@ class FavoritesManager: ObservableObject {
         loadFavorites()
     }
     
-    func addToFavorites(himno: Himnos) {
+    func addToFavorites(himno: Himnario) {
         if !favoriteHimnos.contains(where: { $0.id == himno.id && $0.himnarioVersion == himno.himnarioVersion }) {
             favoriteHimnos.append(himno)
         }
@@ -35,7 +42,7 @@ class FavoritesManager: ObservableObject {
     
     private func loadFavorites() {
         if let data = UserDefaults.standard.data(forKey: "favoriteHimnos"),
-           let himnos = try? JSONDecoder().decode([Himnos].self, from: data) {
+           let himnos = try? JSONDecoder().decode([Himnario].self, from: data) {
             favoriteHimnos = himnos
         }
     }

@@ -1,16 +1,24 @@
+//
+//  AudioControlView.swift
+//  Himnario Adventista SwiftUI
+//
+//  Created by Jose Pimentel on 3/11/25.
+//  Updated for modern player apps on 3/25/25.
+//
+
 import SwiftUI
 import AVFoundation
 
 struct AudioControlView: View {
     @EnvironmentObject var playbackState: AudioPlaybackState
-
+    @EnvironmentObject var favoritesManager: FavoritesManager
+    let himno: Himnario
+    
     var body: some View {
-        // This view is always visible if audio is playing or paused.
-        // In other parts of your UI, you can conditionally embed AudioControlView only if audio is active.
         VStack(spacing: 10) {
             // Title and track time.
             HStack {
-                Text(playbackState.himnoTitle.isEmpty ? "Now Playing" : playbackState.himnoTitle)
+                Text(playbackState.himnoTitle.isEmpty ? himno.title : playbackState.himnoTitle)
                     .font(.headline)
                 Spacer()
                 Text(playbackState.trackTime)
@@ -24,38 +32,48 @@ struct AudioControlView: View {
             
             // Control buttons.
             HStack {
-                Button(action: togglePlayPause) {
-                    Image(systemName: playbackState.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.largeTitle)
+                if AudioBrain.instance.isLoading == true {
+                    LoadingIndicatorView()
+                    
+                } else {
+                    Button(action: togglePlayPause) {
+                        Image(systemName: playbackState.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.largeTitle)
+                }
+                
                 }
                 Spacer()
                 Button(action: stopPlayback) {
                     Image(systemName: "stop.circle")
                         .font(.title)
                 }
+                .disabled(AudioBrain.instance.isLoading ? true : false)
                 Spacer()
                 Button(action: toggleVocalInstrumental) {
-                    Image(systemName: playbackState.isVocal ? "music.mic" : "pianokeys")
+                    Image(systemName: playbackState.isVocal ? "pianokeys" : "music.mic")
                         .font(.title)
+                    Text(playbackState.isVocal ? "pista" : "canto")
                 }
+                
+                Spacer()
+    
+                
             }
             .padding(.horizontal)
         }
         .padding()
-        .background(RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.secondary.opacity(0.1)))
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(Color.secondary.opacity(0.1))
+        )
         .padding(.horizontal)
     }
     
-    // MARK: - Button Actions
-    
     private func togglePlayPause() {
-        // If no audio is loaded, start the song.
         if AudioPlayerManager.shared.audioPlayer == nil {
             startNewSong()
         } else {
             AudioPlayerManager.shared.playPause()
-            // Update our playback state immediately.
             if let status = AudioPlayerManager.shared.audioPlayer?.timeControlStatus {
                 playbackState.isPlaying = (status == .playing)
             }
@@ -64,22 +82,28 @@ struct AudioControlView: View {
     
     private func stopPlayback() {
         AudioPlayerManager.shared.stop()
+        AudioPlayerManager.shared.audioPlayer = nil
         playbackState.progress = 0
         playbackState.isPlaying = false
     }
     
     private func toggleVocalInstrumental() {
         playbackState.isVocal.toggle()
+        AudioBrain.instance.isVoice = playbackState.isVocal
         startNewSong()
     }
     
+    
+    
+    
     private func startNewSong() {
-        // This method is called when the play button is tapped and there's no audio loaded,
-        // or when toggling vocal/instrumental.
-        // It ensures that playback starts immediately.
+        
+        playbackState.himnoTitle = himno.title
+        AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
+                                             indexC: (himno.id - 1),
+                                             isVocal: playbackState.isVocal)
+        
         AudioPlayerManager.shared.stop()
-        // It is assumed that a parent view (or some other mechanism) has already set up the audio requirement via AudioBrain.
-        // Here we simply fetch the track and play it.
         AudioBrain.instance.getTrack {
             DispatchQueue.main.async {
                 playbackState.progress = 0
@@ -90,9 +114,10 @@ struct AudioControlView: View {
     }
 }
 
-struct AudioControlView_Previews: PreviewProvider {
-    static var previews: some View {
-        AudioControlView()
-            .environmentObject(AudioPlaybackState())
-    }
-}
+//struct AudioControlView_Previews: PreviewProvider {
+//    let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+//    static var previews: some View {
+//        AudioControlView(himno: himnarioNuevo[0])
+//            .environmentObject(AudioPlaybackState())
+//    }
+//}

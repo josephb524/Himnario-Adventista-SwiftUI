@@ -8,7 +8,20 @@
 
 import Foundation
 
-class SearchHimnoBrain {
-    //write me code to search for a himno using a number that is compare to the id or the title or the himno
-    
+struct HimnarioSearch {
+
+    func search(query: String, himnos: [Himnario]) -> [Himnario] {
+        guard !query.isEmpty else { return [] }
+
+        if let id = Int(query) {
+            // Search by ID if the query is a number
+            return himnos.filter { $0.id == id }
+        } else {
+            // Search by matching letters in title or himno (case-insensitive)
+            return himnos.filter {
+                $0.title.localizedCaseInsensitiveContains(query) ||
+                $0.himno.localizedCaseInsensitiveContains(query)
+            }
+        }
+    }
 }

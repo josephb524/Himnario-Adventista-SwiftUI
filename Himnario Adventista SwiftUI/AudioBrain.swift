@@ -3,24 +3,19 @@
 //  Himnario Adventista
 //
 //  Created by Jose Pimentel on 8/22/21.
-//  Copyright © 2021 Jose Pimentel. All rights reserved.
+//  Updated for modern player apps on 3/25/25.
 //
 
-import UIKit
+import Foundation
+import AVFoundation
 
-/**
- A class that coordinates retrieving track metadata (via `getTrack(...)`),
- building the stream URL, and controlling playback.
- */
-final class AudioBrain {
-    
-    // MARK: - Singleton
+class AudioBrain {
     static let instance = AudioBrain()
     
-    // MARK: - Services
     let playlistService = PlaylistService()
     
-    // MARK: - Properties
+    var isLoading: Bool = false
+    
     var trackId: String = ""
     var trackDuration: Int = 0
     var trackTime: String = ""
@@ -31,28 +26,22 @@ final class AudioBrain {
     
     private init() {}
     
-    // MARK: - Public Methods
-    
     /// Prepares the requirements for a certain corito.
     func audioRequirement(coritoFav: String, indexC: Int, isVocal: Bool) {
         coritoFavorito = coritoFav
-        indexCorito = indexC  // Now we use the same index everywhere.
+        indexCorito = indexC
         self.isVoice = isVocal
     }
     
     /**
-     Retrieves the track metadata from the playlist URL, then builds the streaming URL.
-     Once the correct stream URL is created, it loads the track into the AudioPlayerManager.
-     
-     - Parameter completion: Called after the track is loaded (or on error).
+     Retrieves track metadata from the playlist URL, builds the streaming URL,
+     and loads the track into the AudioPlayerManager.
      */
     func getTrack(completion: @escaping () -> Void) {
-        // 1. Get the playlist URL based on the category and type.
-        playlistService.findPlaylistURL(
-            coritoFavorito: coritoFavorito,
-            isVoice: isVoice,
-            indexCorito: indexCorito
-        ) { [weak self] playlistURL in
+        isLoading = true
+        playlistService.findPlaylistURL(coritoFavorito: coritoFavorito,
+                                        isVoice: isVoice,
+                                        indexCorito: indexCorito) { [weak self] playlistURL in
             guard let self = self else { return }
             guard let finalURL = playlistURL else {
                 debugPrint("Could not get a valid playlist URL.")
@@ -60,10 +49,8 @@ final class AudioBrain {
                 return
             }
             
-            // 2. Set the URL in the network service (to later fetch track metadata).
             NetworkService.shared.setURL(url: finalURL)
             
-            // 3. Retrieve track metadata (himnos data).
             NetworkService.shared.getHimnos { dataAPI in
                 let dataIndex = self.indexCorito
                 guard dataIndex < dataAPI.data.count else {
@@ -77,12 +64,6 @@ final class AudioBrain {
                 self.trackDuration = himnoData.duration
                 self.trackTime = self.formatTrackTime(seconds: himnoData.duration)
                 
-                if CoritosViewController.isStartingSong {
-                    CoritosViewController.isStartingSong = false
-                    ProgressBarTimer.instance.resetProgress()
-                }
-                
-                // 4. Now build the actual streaming URL using the trackId.
                 self.playlistService.hostService.fetchAudiusHost { resolvedHost in
                     let host = resolvedHost ?? "https://audius-discovery-3.altego.net"
                     let streamURLString = "\(host)/v1/tracks/\(self.trackId)/stream?app_name=HimnarioViejo"
@@ -94,12 +75,10 @@ final class AudioBrain {
                         return
                     }
                     
-                    // Load the track into the AudioPlayerManager (pass trackDuration for progress tracking)
                     AudioPlayerManager.shared.loadTrack(from: streamURL, duration: self.trackDuration)
-                    CoritosViewController.indexCoritoPlaying = self.indexCorito
-                    
                     DispatchQueue.main.async {
                         completion()
+                        self.isLoading = false
                     }
                 }
             } onError: { errorMessage in
@@ -109,14 +88,9 @@ final class AudioBrain {
         }
     }
     
-    /**
-     Helper to format the track's total seconds into "mm:ss".
-     */
     private func formatTrackTime(seconds: Int) -> String {
         let minutes = seconds / 60 % 60
         let secs = seconds % 60
         return String(format: "%02i:%02i", minutes, secs)
     }
-    
-    // If not used, you may remove the setAudioURL() method.
 }

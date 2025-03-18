@@ -1,3 +1,11 @@
+//
+//  LoadingIndicatorView.swift
+//  Himnario Adventista SwiftUI
+//
+//  Created by Jose Pimentel on 3/16/25.
+//
+
+
 import SwiftUI
 
 struct LoadingIndicatorView: View {
