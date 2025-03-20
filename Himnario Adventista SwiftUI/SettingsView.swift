@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
-    @AppStorage("FontSize") private var fontSize: Double = 20.0
+    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
     var body: some View {
         

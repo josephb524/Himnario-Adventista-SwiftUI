@@ -80,6 +80,7 @@ struct FavoriteView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationBarItems(trailing: EditButton())
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     private func delete(at offsets: IndexSet) {
         for index in offsets {

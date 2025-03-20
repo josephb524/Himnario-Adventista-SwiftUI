@@ -53,6 +53,7 @@ struct HimnoDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             
         }
+        .navigationViewStyle(StackNavigationViewStyle())
 //        .onAppear {
 //            
 //            setAudioRequirement()

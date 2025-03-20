@@ -12,7 +12,7 @@ struct ContentView: View {
     @AppStorage("isDarkMode") private var isDarkMode = false
     @StateObject private var playbackState = AudioPlaybackState()
     // Persist font size (if needed globally)
-    @AppStorage("FontSize") private var fontSize: Double = 16.0
+    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
     let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
     let himnarioViejo: [Himnario] = Bundle.main.decode("himnarioViejo.json")
@@ -47,6 +47,7 @@ struct ContentView: View {
                     .toolbarBackground(.visible, for: .navigationBar)
                     .navigationBarBackButtonHidden()
                 }
+                .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
                     Label("Himnario", systemImage: "music.note.list")
                 }
@@ -69,6 +70,7 @@ struct ContentView: View {
                     SettingsView()
                         .navigationTitle("Configuración")
                 }
+                .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
                     Label("Configuración", systemImage: "gearshape")
                 }
