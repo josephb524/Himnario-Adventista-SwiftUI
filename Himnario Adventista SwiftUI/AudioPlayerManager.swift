@@ -54,7 +54,7 @@ final class AudioPlayerManager {
         coritoRate = 0.0
         ProgressBarTimer.instance.stopTimer()
         ProgressBarTimer.instance.resetProgress()
-        AudioBrain.instance.trackTime = ""
+        //AudioBrain.instance.trackTime = ""
     }
     
     func getAudioPlayer() -> AVPlayer? {

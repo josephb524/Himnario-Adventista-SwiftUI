@@ -28,6 +28,8 @@ struct SearchBar: UIViewRepresentable {
             text = searchText
             if searchText.isEmpty {
                 onClear()
+            } else {
+                onCommit()
             }
         }
 
@@ -41,7 +43,6 @@ struct SearchBar: UIViewRepresentable {
         }
 
         @objc func doneButtonTapped() {
-            // Dismiss the keyboard
             searchBarInstance?.resignFirstResponder()
         }
     }
@@ -52,21 +53,39 @@ struct SearchBar: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UISearchBar {
         let searchBar = UISearchBar(frame: .zero)
-        context.coordinator.searchBarInstance = searchBar // Assign the UISearchBar instance
+        context.coordinator.searchBarInstance = searchBar
         searchBar.delegate = context.coordinator
         searchBar.placeholder = "Buscar Himno"
+        
+        // Modern styling
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundImage = UIImage()
+        searchBar.layer.cornerRadius = 12
+        searchBar.clipsToBounds = true
+        
+        // Configure text field
+        if let textField = searchBar.searchTextField as? UITextField {
+            textField.backgroundColor = .systemBackground
+            textField.font = UIFont.systemFont(ofSize: 17)
+            textField.layer.cornerRadius = 10
+            textField.clipsToBounds = true
+            
+            // Add padding
+            let padding: CGFloat = 16
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: padding, height: textField.frame.height))
+            textField.leftView = paddingView
+            textField.leftViewMode = .always
+            textField.rightView = paddingView
+            textField.rightViewMode = .always
+        }
 
-        // Create the toolbar with the Done button
+        // Add Done button toolbar
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: context.coordinator, action: #selector(context.coordinator.doneButtonTapped))
         toolbar.items = [flexSpace, doneButton]
-
-        // Find the UITextField inside UISearchBar and set its inputAccessoryView
-        if let textField = searchBar.value(forKey: "searchField") as? UITextField {
-            textField.inputAccessoryView = toolbar
-        }
+        searchBar.searchTextField.inputAccessoryView = toolbar
 
         return searchBar
     }

@@ -33,14 +33,22 @@ struct AudioControlView: View {
             
             // Control buttons.
             HStack {
+                
                 if AudioBrain.instance.isLoading == true {
                     LoadingIndicatorView()
                     
                 } else {
-                    Button(action: togglePlayPause) {
-                        Image(systemName: playbackState.isPlaying ? "pause.fill" : "play.fill")
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.2)) {  // Add animation
+                            togglePlayPause()
+                        }
+                    }) {
+                        Image(systemName: (playbackState.isPlaying && progressTimer.progress > 0.0)
+                            ? "pause.fill"
+                            : "play.fill")
                             .font(.largeTitle)
-                }
+                            .transition(.scale.combined(with: .opacity)) // Smooth transition effect
+                    }
                 
                 }
                 Spacer()
@@ -55,6 +63,7 @@ struct AudioControlView: View {
                         .font(.title)
                     Text(playbackState.isVocal ? "pista" : "canto")
                 }
+                .disabled(AudioBrain.instance.isLoading ? true : false || himno.himnarioVersion == "Antiguo")
                 
                 Spacer()
     
@@ -65,7 +74,7 @@ struct AudioControlView: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 15)
-                .fill(Color.secondary.opacity(0.1))
+                .fill(Color.secondary.opacity(0.5))
         )
         .padding(.horizontal)
     }
@@ -91,7 +100,9 @@ struct AudioControlView: View {
     private func toggleVocalInstrumental() {
         playbackState.isVocal.toggle()
         AudioBrain.instance.isVoice = playbackState.isVocal
-        startNewSong()
+        if playbackState.isPlaying {
+            startNewSong()
+        }
     }
     
     
@@ -114,6 +125,10 @@ struct AudioControlView: View {
         }
     }
 }
+
+//#Preview {
+//    AudioControlView(playbackState: <#T##AudioPlaybackState#>, favoritesManager: <#T##FavoritesManager#>, progressTimer: <#T##arg#>, himno: <#T##Himnario#>)
+//}
 
 //struct AudioControlView_Previews: PreviewProvider {
 //    let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")

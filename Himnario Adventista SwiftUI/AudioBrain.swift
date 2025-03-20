@@ -78,7 +78,6 @@ class AudioBrain {
                     AudioPlayerManager.shared.loadTrack(from: streamURL, duration: self.trackDuration)
                     DispatchQueue.main.async {
                         completion()
-                        self.isLoading = false
                     }
                 }
             } onError: { errorMessage in
@@ -88,7 +87,7 @@ class AudioBrain {
         }
     }
     
-    func formatTrackTime(seconds: Int) -> String {
+    private func formatTrackTime(seconds: Int) -> String {
         let minutes = seconds / 60 % 60
         let secs = seconds % 60
         return String(format: "%02i:%02i", minutes, secs)

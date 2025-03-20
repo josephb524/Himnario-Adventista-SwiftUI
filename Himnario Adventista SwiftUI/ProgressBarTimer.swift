@@ -19,6 +19,7 @@ class ProgressBarTimer: ObservableObject {
     
     func startTimer() {
         stopTimer()
+        AudioBrain.instance.isLoading = false
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.updateProgress()
         }
@@ -58,9 +59,10 @@ class ProgressBarTimer: ObservableObject {
             self.progress = 1.0
         }
         stopTimer()
-        NetworkService.shared.setURL(url: "123")
+        //NetworkService.shared.setURL(url: "123")
         DispatchQueue.main.async {
             self.progress = 0.0
+            AudioPlayerManager.shared.stop()
         }
     }
 }

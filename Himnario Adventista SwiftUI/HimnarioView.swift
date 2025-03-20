@@ -18,6 +18,7 @@ struct HimnarioView: View {
     
     var body: some View {
         VStack {
+            
             SearchBar(text: $searchText, onCommit: {
                 himnoSearchResult = himnoSearch.search(query: searchText, himnos: himnos)
                 isSearching = !searchText.isEmpty

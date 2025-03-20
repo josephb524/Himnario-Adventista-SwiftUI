@@ -16,11 +16,11 @@ struct SettingsView: View {
         Form {
             Section(header: Text("Apariencia")) {
                 Toggle(isOn: $isDarkMode) {
-                    Text("Dark Mode")
+                    Text("Modo Oscuro")
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Font Size: \(Int(fontSize))")
+                    Text("Tamaño de Letra: \(Int(fontSize))")
                     Slider(value: $fontSize, in: 20...40, step: 1)
                 }
                 .padding(.vertical, 5)
