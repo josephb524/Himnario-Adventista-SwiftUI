@@ -16,7 +16,7 @@ struct HimnoDetailView: View {
     let himno: Himnario
 
     // Persist font size using AppStorage.
-    @AppStorage("FontSize") private var fontSize: Double = 30.0
+    @EnvironmentObject var settings: SettingsManager
 
     var body: some View {
         NavigationView {
@@ -34,7 +34,7 @@ struct HimnoDetailView: View {
                 }
                 ScrollView {
                     Text(himno.himno)
-                        .font(.system(size: fontSize))
+                        .font(.system(size: settings.fontSize))
                         .padding()
                 }
                 

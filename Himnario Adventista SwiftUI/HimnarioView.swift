@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HimnarioView: View {
-    let himnos: [Himnario]
+    var himnos: [Himnario]
     @State private var searchText = ""
     @State private var isSearching = false
     @EnvironmentObject var favoritesManager: FavoritesManager
@@ -34,7 +34,7 @@ struct HimnarioView: View {
                 if isSearching {
                     // If the search results are empty, show a placeholder message
                     if himnoSearchResult.isEmpty {
-                        Text("No results found.")
+                        Text("No se encontraron himnos")
                             .foregroundColor(.gray)
                     } else {
                         // Otherwise, show the search results

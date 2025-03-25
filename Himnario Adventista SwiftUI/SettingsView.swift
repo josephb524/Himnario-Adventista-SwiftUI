@@ -8,20 +8,21 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("isDarkMode") private var isDarkMode = false
-    @AppStorage("FontSize") private var fontSize: Double = 30.0
+//    @AppStorage("isDarkMode") private var isDarkMode = false
+//    @AppStorage("FontSize") private var fontSize: Double = 30.0
+    @EnvironmentObject var settings: SettingsManager
     
     var body: some View {
         
         Form {
             Section(header: Text("Apariencia")) {
-                Toggle(isOn: $isDarkMode) {
+                Toggle(isOn: $settings.isDarkMode) {
                     Text("Modo Oscuro")
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Tamaño de Letra: \(Int(fontSize))")
-                    Slider(value: $fontSize, in: 20...40, step: 1)
+                    Text("Tamaño de Letra: \(Int(settings.fontSize))")
+                    Slider(value: $settings.fontSize, in: 20...40, step: 1)
                 }
                 .padding(.vertical, 5)
             }

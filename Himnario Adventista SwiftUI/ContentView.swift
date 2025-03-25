@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var favoritesManager = FavoritesManager()
-    @AppStorage("isDarkMode") private var isDarkMode = false
+//    @AppStorage("isDarkMode") private var isDarkMode = false
     @StateObject private var playbackState = AudioPlaybackState()
+    @StateObject private var settings = SettingsManager.shared
     // Persist font size (if needed globally)
-    @AppStorage("FontSize") private var fontSize: Double = 30.0
+//    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
     let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
     let himnarioViejo: [Himnario] = Bundle.main.decode("himnarioViejo.json")
@@ -41,6 +42,7 @@ struct ContentView: View {
                         .padding()
                         
                         HimnarioView(himnos: selectedHimnario == "Himnario Nuevo" ? himnarioNuevo : himnarioViejo)
+                            .id(selectedHimnario)
                     }
                     .navigationTitle("Himnario")
                     .toolbarBackground(Colors.shared.navigationBarGradient, for: .navigationBar)
@@ -75,7 +77,8 @@ struct ContentView: View {
                     Label("Configuración", systemImage: "gearshape")
                 }
             }
-            .preferredColorScheme(isDarkMode ? .dark : .light)
+            .preferredColorScheme(settings.isDarkMode ? .dark : .light)
+            .environmentObject(settings)
         }
     }
     
