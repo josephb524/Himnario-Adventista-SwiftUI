@@ -52,10 +52,24 @@ class AudioBrain {
             NetworkService.shared.setURL(url: finalURL)
             
             NetworkService.shared.getHimnos { dataAPI in
-                let dataIndex = self.indexCorito
+                
+                var dataIndex = 0
+                
+                switch self.indexCorito {
+                    case 0..<200:
+                        dataIndex = self.indexCorito
+                    case 200..<400:
+                        dataIndex = self.indexCorito - 200
+                    case 400..<600:
+                        dataIndex = self.indexCorito - 400
+                    default:
+                        dataIndex = self.indexCorito - 600
+                }
+                
                 guard dataIndex < dataAPI.data.count else {
                     debugPrint("Index out of range in dataAPI.")
                     DispatchQueue.main.async { completion() }
+                    self.isLoading = false
                     return
                 }
                 
@@ -72,6 +86,7 @@ class AudioBrain {
                           let streamURL = URL(string: encodedStreamURLString) else {
                         debugPrint("Invalid streaming URL.")
                         DispatchQueue.main.async { completion() }
+                        self.isLoading = false
                         return
                     }
                     
