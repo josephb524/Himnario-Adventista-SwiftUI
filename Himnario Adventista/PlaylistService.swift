@@ -26,7 +26,7 @@ final class PlaylistService {
                 playlist3: playlist3,
                 playlist4: playlist4
             )
-            let finalURL = "\(host)/v1/playlists/\(chosenPid)/tracks?app_name=HimnarioViejo"
+            let finalURL = "\(host)/v1/playlists/\(chosenPid)/tracks?app_name=CoritosAdventistas"
             completion(finalURL)
         }
     }

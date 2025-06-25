@@ -80,7 +80,7 @@ class AudioBrain {
                 
                 self.playlistService.hostService.fetchAudiusHost { resolvedHost in
                     let host = resolvedHost ?? "https://audius-discovery-3.altego.net"
-                    let streamURLString = "\(host)/v1/tracks/\(self.trackId)/stream?app_name=HimnarioViejo"
+                    let streamURLString = "\(host)/v1/tracks/\(self.trackId)/stream?app_name=CoritosAdventistas"
                     
                     guard let encodedStreamURLString = streamURLString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                           let streamURL = URL(string: encodedStreamURLString) else {
