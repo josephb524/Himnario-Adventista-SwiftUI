@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Himnario Adventista SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Himnario Adventista.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9EA1B92D6EB7E400D2E201 /* Himnario Adventista SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Himnario Adventista SwiftUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9EA1C32D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Himnario Adventista SwiftUIUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -85,7 +85,7 @@
 		BB9EA1AA2D6EB7DF00D2E201 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista SwiftUI.app */,
+				BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */,
 				BB9EA1B92D6EB7E400D2E201 /* Himnario Adventista SwiftUITests.xctest */,
 				BB9EA1C32D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests.xctest */,
 			);
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista SwiftUI */ = {
+		BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUI" */;
+			buildConfigurationList = BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista" */;
 			buildPhases = (
 				BB9EA1A52D6EB7DF00D2E201 /* Sources */,
 				BB9EA1A62D6EB7DF00D2E201 /* Frameworks */,
@@ -110,11 +110,11 @@
 			fileSystemSynchronizedGroups = (
 				BB9EA1AB2D6EB7DF00D2E201 /* Himnario Adventista SwiftUI */,
 			);
-			name = "Himnario Adventista SwiftUI";
+			name = "Himnario Adventista";
 			packageProductDependencies = (
 			);
 			productName = "Himnario Adventista SwiftUI";
-			productReference = BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista SwiftUI.app */;
+			productReference = BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */;
 			productType = "com.apple.product-type.application";
 		};
 		BB9EA1B82D6EB7E400D2E201 /* Himnario Adventista SwiftUITests */ = {
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista SwiftUI" */;
+			buildConfigurationList = BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,7 +200,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista SwiftUI */,
+				BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */,
 				BB9EA1B82D6EB7E400D2E201 /* Himnario Adventista SwiftUITests */,
 				BB9EA1C22D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests */,
 			);
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		BB9EA1BB2D6EB7E400D2E201 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista SwiftUI */;
+			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */;
 			targetProxy = BB9EA1BA2D6EB7E400D2E201 /* PBXContainerItemProxy */;
 		};
 		BB9EA1C52D6EB7E400D2E201 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista SwiftUI */;
+			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */;
 			targetProxy = BB9EA1C42D6EB7E400D2E201 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -533,7 +533,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista SwiftUI" */ = {
+		BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1CB2D6EB7E400D2E201 /* Debug */,
@@ -542,7 +542,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUI" */ = {
+		BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1CE2D6EB7E400D2E201 /* Debug */,
