@@ -397,7 +397,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista SwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista/Preview Content\"";
 				DEVELOPMENT_TEAM = 57R4ZFVKDM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -413,7 +413,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.JosePimentel.HimnarioViejoYNuevo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -432,7 +432,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista SwiftUI/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista/Preview Content\"";
 				DEVELOPMENT_TEAM = 57R4ZFVKDM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -448,7 +448,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.JosePimentel.HimnarioViejoYNuevo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
