@@ -55,38 +55,52 @@ struct FavoriteView: View {
                             .onDelete(perform: delete)
                         }
                     } else {
-                        // Not searching: show all himnos
-                        ForEach(favoritesManager.favoriteHimnos) { himno in
-                            NavigationLink(destination: HimnoDetailView(himno: himno)
-                                .environmentObject(favoritesManager)
-                                .environmentObject(playbackState)){
-                                    VStack(alignment: .leading) {
-                                        Text(himno.title)
-                                            .font(.headline)
-                                        Text(himno.himno)
-                                            .lineLimit(2)
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
+                        // Not searching: show all favorites
+                        if favoritesManager.favoriteHimnos.isEmpty {
+                            VStack {
+                                Image(systemName: "star")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.gray)
+                                Text("No hay favoritos aún")
+                                    .font(.headline)
+                                    .foregroundColor(.gray)
+                                Text("Agrega himnos a favoritos para verlos aquí")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding()
+                        } else {
+                            ForEach(favoritesManager.favoriteHimnos) { himno in
+                                NavigationLink(destination: HimnoDetailView(himno: himno)
+                                    .environmentObject(favoritesManager)
+                                    .environmentObject(playbackState)) {
+                                        VStack(alignment: .leading) {
+                                            Text(himno.title)
+                                                .font(.headline)
+                                            Text(himno.himno)
+                                                .lineLimit(2)
+                                                .font(.subheadline)
+                                                .foregroundColor(.gray)
+                                        }
                                     }
-                                }
+                            }
+                            .onDelete(perform: delete)
                         }
-                        .onDelete(perform: delete)
                     }
                 }
-                
+                .padding(2)
             }
             .navigationTitle("Favoritos")
-            .toolbarBackground(Colors.shared.navigationBarGradient, for: .navigationBar)
+            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .navigationBarItems(trailing: EditButton())
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
+    
     private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            let himnoID = favoritesManager.favoriteHimnos[index].id
-            let himnoVersion = favoritesManager.favoriteHimnos[index].himnarioVersion
-            favoritesManager.removeFromFavorites(id: himnoID, himnarioVersion: himnoVersion)
+        offsets.map { favoritesManager.favoriteHimnos[$0] }.forEach { himno in
+            favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
         }
     }
 }
@@ -100,3 +114,4 @@ struct FavoriteView: View {
 //    }
 //    .environmentObject(favoritesManager)
 //}
+

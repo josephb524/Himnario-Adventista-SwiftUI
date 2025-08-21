@@ -48,7 +48,7 @@ struct HimnoDetailView: View {
                 Spacer()
             }
             .navigationBarItems(leading: backButton)
-            .toolbarBackground(Colors.shared.navigationBarGradient, for: .navigationBar)
+            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
             .navigationTitle("#\(himno.title)")
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)

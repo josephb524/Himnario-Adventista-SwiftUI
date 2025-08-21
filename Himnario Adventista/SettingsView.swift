@@ -27,6 +27,10 @@ struct SettingsView: View {
                     Slider(value: $settings.fontSize, in: 20...40, step: 1)
                 }
                 .padding(.vertical, 5)
+                
+                NavigationLink(destination: NavigationBarThemeView()) {
+                    Text("Tema de Navegación")
+                }
             }
             
             Section(header: Text("Opinión y Comentarios")) {
@@ -50,7 +54,7 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "heart.circle.fill")
                             .foregroundColor(.red)
-                        Text("Escribir un Comentario")
+                        Text("Escribir Reseña")
                         Spacer()
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)
@@ -73,7 +77,7 @@ struct SettingsView: View {
             }
             #endif
         }
-        .toolbarBackground(Colors.shared.navigationBarGradient, for: .navigationBar)
+        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .padding(.top, 5)
         
@@ -103,6 +107,4 @@ struct SettingsView: View {
         endPoint: .trailing
     )
     SettingsView()
-        .environmentObject(SettingsManager.shared)
-        .environmentObject(ReviewManager.shared)
 }

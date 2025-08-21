@@ -12,6 +12,7 @@ class SettingsManager: ObservableObject {
     
     @AppStorage("FontSizes") var fontSize: Double = 30.0
     @AppStorage("isDarkMode") var isDarkMode = false
+    @AppStorage("selectedNavigationTheme") var selectedNavigationTheme: String = NavigationBarTheme.defaultTheme.rawValue
     
     // Review prompt state
     @Published var showReviewPrompt = false

@@ -46,7 +46,7 @@ struct ContentView: View {
                             .id(selectedHimnario)
                     }
                     .navigationTitle("Himnario")
-                    .toolbarBackground(Colors.shared.navigationBarGradient, for: .navigationBar)
+                    .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
                     .toolbarBackground(.visible, for: .navigationBar)
                     .navigationBarBackButtonHidden()
                 }
