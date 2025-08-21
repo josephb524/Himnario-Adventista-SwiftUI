@@ -12,4 +12,9 @@ class SettingsManager: ObservableObject {
     
     @AppStorage("FontSizes") var fontSize: Double = 30.0
     @AppStorage("isDarkMode") var isDarkMode = false
+    
+    // Review prompt state
+    @Published var showReviewPrompt = false
+    
+    private init() {}
 }

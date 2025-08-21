@@ -12,6 +12,7 @@ struct ContentView: View {
 //    @AppStorage("isDarkMode") private var isDarkMode = false
     @StateObject private var playbackState = AudioPlaybackState()
     @StateObject private var settings = SettingsManager.shared
+    @StateObject private var reviewManager = ReviewManager.shared
     // Persist font size (if needed globally)
 //    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
@@ -55,18 +56,18 @@ struct ContentView: View {
                 }
                 .environmentObject(favoritesManager)
                 .environmentObject(playbackState)
-                
+
                 // Second Tab: Favorites.
-                
+
                 FavoriteView()
                     .navigationTitle("Favoritos")
-                
+
                     .tabItem {
                         Label("Favoritos", systemImage: "star")
                     }
                     .environmentObject(favoritesManager)
                     .environmentObject(playbackState)
-                
+
                 // Third Tab: Settings.
                 NavigationView {
                     SettingsView()
@@ -74,11 +75,30 @@ struct ContentView: View {
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
-                    Label("Configuración", systemImage: "gearshape")
+                    Label("Configuraciónes", systemImage: "gearshape")
                 }
             }
             .preferredColorScheme(settings.isDarkMode ? .dark : .light)
             .environmentObject(settings)
+            .environmentObject(reviewManager)
+            
+            // Review prompt overlay
+            if settings.showReviewPrompt {
+                ReviewPromptView(
+                    isPresented: $settings.showReviewPrompt,
+                    onReviewAction: {
+                        reviewManager.userLeftReview()
+                    },
+                    onDismiss: {
+                        // Just dismiss, no additional action needed
+                    }
+                )
+                .zIndex(1000)
+            }
+        }
+        .onAppear {
+            // Track app launch when ContentView appears
+            reviewManager.trackAppLaunch()
         }
     }
     

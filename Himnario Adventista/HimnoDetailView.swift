@@ -11,6 +11,7 @@ import AVFoundation
 struct HimnoDetailView: View {
     @EnvironmentObject var favoritesManager: FavoritesManager
     @EnvironmentObject var playbackState: AudioPlaybackState
+    @EnvironmentObject var reviewManager: ReviewManager
     @Environment(\.presentationMode) var presentationMode
 
     let himno: Himnario
@@ -54,6 +55,10 @@ struct HimnoDetailView: View {
             
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear {
+            // Track hymn view for review prompt
+            reviewManager.trackHymnoViewed()
+        }
 //        .onAppear {
 //            
 //            setAudioRequirement()
@@ -77,10 +82,14 @@ struct HimnoDetailView: View {
     }
     
     private func toggleFavorite() {
-        if favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) {
+        let wasFavorite = favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
+        
+        if wasFavorite {
             favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
         } else {
             favoritesManager.addToFavorites(himno: himno)
+            // Track favorite added for review prompt
+            reviewManager.trackFavoriteAdded()
         }
     }
     
