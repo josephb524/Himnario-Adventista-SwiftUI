@@ -95,19 +95,26 @@ class ReviewManager: ObservableObject {
     private func checkForReviewPrompt() {
         if shouldShowReviewPrompt() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                // Show custom review prompt through SettingsManager
-                SettingsManager.shared.showReviewPrompt = true
+                // Use Apple's native review prompt for automatic requests
+                self.showNativeReviewPrompt()
             }
         }
     }
     
-    func showReviewPrompt() {
+    // MARK: - Review Prompt Methods
+    
+    // For automatic prompts - use Apple's native prompt
+    private func showNativeReviewPrompt() {
         lastReviewRequestDate = Date()
         
-        // Use iOS native review prompt
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             SKStoreReviewController.requestReview(in: windowScene)
         }
+    }
+    
+    // For manual prompts - use custom prompt
+    func showCustomReviewPrompt() {
+        SettingsManager.shared.showReviewPrompt = true
     }
     
     func userDismissedReview() {
@@ -132,7 +139,7 @@ class ReviewManager: ObservableObject {
     }
     
     func forceShowReview() {
-        SettingsManager.shared.showReviewPrompt = true
+        showCustomReviewPrompt()
     }
     #endif
 } 

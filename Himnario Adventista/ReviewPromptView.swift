@@ -136,7 +136,7 @@ struct ReviewPromptView: View {
         } else {
             // Fallback to native review prompt
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                SKStoreReviewController.requestReview(in: windowScene)
+                AppStore.requestReview(in: windowScene)
             }
         }
         

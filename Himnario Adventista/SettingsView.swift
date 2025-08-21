@@ -29,13 +29,13 @@ struct SettingsView: View {
                 .padding(.vertical, 5)
                 
                 NavigationLink(destination: NavigationBarThemeView()) {
-                    Text("Tema de Navegación")
+                    Text("Cambiar Color")
                 }
             }
             
             Section(header: Text("Opinión y Comentarios")) {
                 Button(action: {
-                    settings.showReviewPrompt = true
+                    reviewManager.showCustomReviewPrompt()
                 }) {
                     HStack {
                         Image(systemName: "star.circle.fill")
@@ -47,35 +47,8 @@ struct SettingsView: View {
                     }
                 }
                 .foregroundColor(.primary)
-                
-                Button(action: {
-                    openAppStore()
-                }) {
-                    HStack {
-                        Image(systemName: "heart.circle.fill")
-                            .foregroundColor(.red)
-                        Text("Escribir Reseña")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                    }
-                }
-                .foregroundColor(.primary)
             }
             
-            #if DEBUG
-            Section(header: Text("Desarrollo (Solo Debug)")) {
-                Button("Reiniciar Contador de Reseñas") {
-                    reviewManager.resetReviewTracking()
-                }
-                .foregroundColor(.red)
-                
-                Button("Forzar Mostrar Reseña") {
-                    reviewManager.forceShowReview()
-                }
-                .foregroundColor(.blue)
-            }
-            #endif
         }
         .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
@@ -90,7 +63,7 @@ struct SettingsView: View {
         } else {
             // Fallback to native review prompt if URL fails
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                SKStoreReviewController.requestReview(in: windowScene)
+                AppStore.requestReview(in: windowScene)
             }
         }
     }
