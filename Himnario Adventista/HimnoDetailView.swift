@@ -18,7 +18,7 @@ struct HimnoDetailView: View {
     let himno: Himnario
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
                     // Header card
@@ -37,9 +37,9 @@ struct HimnoDetailView: View {
                                         .padding(.vertical, 6)
                                         .background(
                                             Capsule()
-                                                .fill(himno.himnarioVersion == "Nuevo" ? Colors.shared.getCurrentAccentColor().opacity(0.1) : Color.orange.opacity(0.1))
+                                                .fill(himno.himnarioVersion == "Nuevo" ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
                                         )
-                                        .foregroundColor(himno.himnarioVersion == "Nuevo" ? Colors.shared.getCurrentAccentColor() : .orange)
+                                        .foregroundColor(himno.himnarioVersion == "Nuevo" ? .blue : .orange)
                                     
                                     if favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) {
                                         HStack(spacing: 4) {
@@ -77,12 +77,8 @@ struct HimnoDetailView: View {
                     .padding(24)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                            .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.1), radius: 15, x: 0, y: 8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                    .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.2), lineWidth: 1)
-                            )
+                            .fill(Color(.secondarySystemBackground))
+                            .shadow(color: .black.opacity(0.05), radius: 15, x: 0, y: 8)
                     )
                     .padding(.horizontal, 16)
                     
@@ -106,86 +102,26 @@ struct HimnoDetailView: View {
                     .padding(24)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(.ultraThinMaterial)
+                            .fill(Color(.systemBackground))
                             .shadow(color: .black.opacity(0.05), radius: 12, x: 0, y: 6)
                     )
                     .padding(.horizontal, 16)
                     
-                   
+                    AudioControlView(himno: himno)
+                        .environmentObject(playbackState)
+                        .environmentObject(favoritesManager)
                     
-                    Spacer(minLength: playbackState.isPlaying ? 120 : 100)
+                    Spacer(minLength: 100)
                 }
                 .padding(.top, 16)
             }
-            // Audio controls
-            AudioControlView(himno: himno)
-                .environmentObject(playbackState)
-                .environmentObject(favoritesManager)
             .background(Color(.systemGroupedBackground))
-            
-            // Floating audio controls when playing
-            if playbackState.isPlaying && !playbackState.himnoTitle.isEmpty {
-                VStack(spacing: 0) {
-                    ProgressView(value: ProgressBarTimer.instance.progress)
-                        .tint(Colors.shared.getCurrentAccentColor())
-                        .scaleEffect(y: 2)
-                    
-                    HStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(playbackState.himnoTitle)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
-                            Text("Reproduciendo")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            AudioPlayerManager.shared.playPause()
-                            if let status = AudioPlayerManager.shared.audioPlayer?.timeControlStatus {
-                                playbackState.isPlaying = (status == .playing)
-                            }
-                        }) {
-                            Image(systemName: playbackState.isPlaying ? "pause.fill" : "play.fill")
-                                .font(.title2)
-                                .foregroundColor(.white)
-                                .frame(width: 44, height: 44)
-                                .background(Colors.shared.getCurrentAccentColor())
-                                .clipShape(Circle())
-                        }
-                        
-                        Button(action: {
-                            AudioPlayerManager.shared.stop()
-                            AudioPlayerManager.shared.audioPlayer = nil
-                            playbackState.progress = 0
-                            playbackState.isPlaying = false
-                        }) {
-                            Image(systemName: "stop.fill")
-                                .font(.title3)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(.ultraThinMaterial)
-                }
-                .background(
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                        .ignoresSafeArea(.all, edges: .bottom)
-                )
-                .transition(.move(edge: .bottom))
-                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: playbackState.isPlaying)
-            }
+            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
-        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationViewStyle(StackNavigationViewStyle())
         .onAppear { reviewManager.trackHymnoViewed() }
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
             playbackState.isPlaying = false

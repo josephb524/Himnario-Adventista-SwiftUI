@@ -9,13 +9,12 @@ import SwiftUI
 
 struct HymnRowView: View {
     let himno: Himnario
-    @EnvironmentObject var settings: SettingsManager
     
     var body: some View {
         HStack(spacing: 16) {
             // Left accent with gradient
             LinearGradient(
-                colors: [Colors.shared.getCurrentAccentColor(), Colors.shared.getCurrentAccentColor().opacity(0.7)],
+                colors: [Color.accentColor, Color.accentColor.opacity(0.7)],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -39,7 +38,7 @@ struct HymnRowView: View {
                         .frame(width: 20, height: 20)
                         .background(
                             Circle()
-                                .fill(himno.himnarioVersion == "Nuevo" ? Colors.shared.getCurrentAccentColor() : Color.orange)
+                                .fill(himno.himnarioVersion == "Nuevo" ? Color.blue : Color.orange)
                         )
                 }
                 
@@ -58,14 +57,13 @@ struct HymnRowView: View {
         .padding(.horizontal, 20)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
-                .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.15), radius: 8, x: 0, y: 4)
+                .fill(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.2), lineWidth: 1)
+                .strokeBorder(Color(.systemGray5), lineWidth: 0.5)
         )
-        .id(settings.selectedNavigationTheme) // Force refresh when theme changes
     }
 }
 
@@ -76,5 +74,4 @@ struct HymnRowView: View {
     }
     .padding()
     .background(Color(.systemGroupedBackground))
-    .environmentObject(SettingsManager.shared)
 } 

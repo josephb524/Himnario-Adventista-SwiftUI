@@ -33,12 +33,16 @@ struct SettingsView: View {
                             // Settings icon
                             ZStack {
                                 Circle()
-                                    .fill(Colors.shared.getCurrentAccentColor().opacity(0.15))
+                                    .fill(LinearGradient(
+                                        colors: [Color.accentColor.opacity(0.2), Color.accentColor.opacity(0.1)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ))
                                     .frame(width: 48, height: 48)
                                 
                                 Image(systemName: "gearshape.fill")
                                     .font(.title2)
-                                    .foregroundColor(Colors.shared.getCurrentAccentColor())
+                                    .foregroundColor(.accentColor)
                             }
                         }
                     }
@@ -46,7 +50,7 @@ struct SettingsView: View {
                     .padding(.top, 16)
                     
                     // Appearance Settings
-                    SettingsCardView(title: "Apariencia", icon: "paintbrush.fill", iconColor: Colors.shared.getCurrentAccentColor()) {
+                    SettingsCardView(title: "Apariencia", icon: "paintbrush.fill", iconColor: .blue) {
                         VStack(spacing: 20) {
                             // Dark mode toggle
                             HStack {
@@ -60,7 +64,7 @@ struct SettingsView: View {
                                 }
                                 Spacer()
                                 Toggle("", isOn: $settings.isDarkMode)
-                                    .toggleStyle(SwitchToggleStyle(tint: Colors.shared.getCurrentAccentColor()))
+                                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
                             }
                             
                             Divider()
@@ -75,10 +79,10 @@ struct SettingsView: View {
                                     Text("\(Int(settings.fontSize))")
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.accentColor)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 4)
-                                        .background(Colors.shared.getCurrentAccentColor())
+                                        .background(Color.accentColor.opacity(0.1))
                                         .cornerRadius(8)
                                 }
                                 
@@ -88,7 +92,7 @@ struct SettingsView: View {
                                         .foregroundColor(.secondary)
                                     
                                     Slider(value: $settings.fontSize, in: 20...40, step: 1)
-                                        .tint(Colors.shared.getCurrentAccentColor())
+                                        .tint(.accentColor)
                                     
                                     Text("A")
                                         .font(.title3)
@@ -116,13 +120,9 @@ struct SettingsView: View {
                                     Spacer()
                                     
                                     // Preview of current theme
-                                    RoundedRectangle(cornerRadius: 8)
+                                    RoundedRectangle(cornerRadius: 6)
                                         .fill(Colors.shared.getNavigationBarGradient())
-                                        .frame(width: 40, height: 24)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.3), lineWidth: 1)
-                                        )
+                                        .frame(width: 30, height: 20)
                                     
                                     Image(systemName: "chevron.right")
                                         .font(.caption)
@@ -224,12 +224,8 @@ struct SettingsCardView<Content: View>: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.1), radius: 10, x: 0, y: 4)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.1), lineWidth: 1)
-                )
+                .fill(Color(.secondarySystemBackground))
+                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
         )
         .padding(.horizontal, 16)
     }

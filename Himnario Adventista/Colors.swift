@@ -40,27 +40,6 @@ enum NavigationBarTheme: String, CaseIterable, Identifiable {
         }
     }
     
-    var accentColor: Color {
-        switch self {
-        case .defaultTheme:
-            return Color.blue
-        case .sunset:
-            return Color(red: 0.98, green: 0.36, blue: 0.64)
-        case .ocean:
-            return Color(red: 0.00, green: 0.78, blue: 1.00)
-        case .forest:
-            return Color(red: 0.29, green: 0.67, blue: 0.20)
-        case .royal:
-            return Color(red: 0.69, green: 0.17, blue: 0.94)
-        case .warmth:
-            return Color(red: 1.00, green: 0.65, blue: 0.20)
-        case .pastel:
-            return Color(red: 0.78, green: 0.68, blue: 0.96)
-        case .midnight:
-            return Color(red: 0.20, green: 0.22, blue: 0.60)
-        }
-    }
-    
     var gradient: LinearGradient {
         switch self {
         case .defaultTheme:
@@ -213,11 +192,5 @@ struct Colors {
     func getNavigationBarGradient() -> LinearGradient {
         let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
         return selectedTheme.gradient
-    }
-    
-    // Method to get the current theme's accent color
-    func getCurrentAccentColor() -> Color {
-        let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
-        return selectedTheme.accentColor
     }
 }

@@ -25,6 +25,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
+            // Background gradient
             LinearGradient(
                 colors: [Color(.systemBackground), Color(.systemGroupedBackground)],
                 startPoint: .top,
@@ -33,8 +34,10 @@ struct ContentView: View {
             .ignoresSafeArea()
             
             TabView {
+                // Hymnal Tab
                 NavigationView {
                     VStack(spacing: 0) {
+                        // Custom header with picker
                         VStack(spacing: 16) {
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
@@ -50,6 +53,7 @@ struct ContentView: View {
                             }
                             .padding(.horizontal, 20)
                             
+                            // Modern segmented picker
                             Picker("Selecciona el Himnario", selection: $selectedHimnario) {
                                 ForEach(himnarios, id: \.self) { item in
                                     Text(item == "Himnario Nuevo" ? "Nuevo" : "Antiguo")
@@ -58,17 +62,12 @@ struct ContentView: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .padding(.horizontal, 20)
-                            .tint(Colors.shared.getCurrentAccentColor())
                         }
                         .padding(.vertical, 16)
                         .background(
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .fill(.ultraThinMaterial)
-                                .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.1), radius: 10, x: 0, y: 5)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                        .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.2), lineWidth: 1)
-                                )
+                                .fill(Color(.secondarySystemBackground))
+                                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
                         )
                         .padding(.horizontal, 16)
                         .padding(.bottom, 8)
@@ -85,6 +84,7 @@ struct ContentView: View {
                 .environmentObject(favoritesManager)
                 .environmentObject(playbackState)
 
+                // Favorites Tab
                 FavoriteView()
                     .tabItem {
                         Label("Favoritos", systemImage: "heart.fill")
@@ -92,6 +92,7 @@ struct ContentView: View {
                     .environmentObject(favoritesManager)
                     .environmentObject(playbackState)
 
+                // Settings Tab
                 NavigationView {
                     SettingsView()
                 }
@@ -101,27 +102,25 @@ struct ContentView: View {
                 }
             }
             .preferredColorScheme(settings.isDarkMode ? .dark : .light)
-            .tint(Colors.shared.getCurrentAccentColor())
             .environmentObject(settings)
             .environmentObject(reviewManager)
             
+            // Review prompt overlay
             if settings.showReviewPrompt {
                 ReviewPromptView(
                     isPresented: $settings.showReviewPrompt,
                     onReviewAction: {
                         reviewManager.userLeftReview()
                     },
-                    onDismiss: {}
+                    onDismiss: {
+                        // Just dismiss, no additional action needed
+                    }
                 )
                 .zIndex(1000)
             }
         }
         .onAppear {
             reviewManager.trackAppLaunch()
-            updateTabBarAppearance()
-        }
-        .onChange(of: settings.selectedNavigationTheme) { _ in
-            updateTabBarAppearance()
         }
     }
     
@@ -129,29 +128,17 @@ struct ContentView: View {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor.systemBackground
+        
+        // Customize tab bar item appearance
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor.systemBlue
+        ]
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.systemGray
+        ]
+        
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
-    }
-    
-    private func updateTabBarAppearance() {
-        DispatchQueue.main.async {
-            let appearance = UITabBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.systemBackground
-            
-            let accentUIColor = UIColor(Colors.shared.getCurrentAccentColor())
-            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-                .foregroundColor: accentUIColor
-            ]
-            appearance.stackedLayoutAppearance.selected.iconColor = accentUIColor
-            appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-                .foregroundColor: UIColor.systemGray
-            ]
-            appearance.stackedLayoutAppearance.normal.iconColor = UIColor.systemGray
-            
-            UITabBar.appearance().standardAppearance = appearance
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
     }
 }
 
