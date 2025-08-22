@@ -40,6 +40,38 @@ enum NavigationBarTheme: String, CaseIterable, Identifiable {
         }
     }
     
+    // Primary accent color representative of the theme
+    var accentColor: Color {
+        switch self {
+        case .defaultTheme:
+            return Color.blue
+        case .sunset:
+            return Color(red: 0.98, green: 0.36, blue: 0.64) // rose
+        case .ocean:
+            return Color(red: 0.00, green: 0.78, blue: 1.00) // bright turquoise
+        case .forest:
+            return Color(red: 0.29, green: 0.67, blue: 0.20) // leaf green
+        case .royal:
+            return Color(red: 0.69, green: 0.17, blue: 0.94) // vivid purple
+        case .warmth:
+            return Color(red: 1.00, green: 0.65, blue: 0.20) // vivid orange
+        case .pastel:
+            return Color(red: 0.78, green: 0.68, blue: 0.96) // lavender
+        case .midnight:
+            return Color(red: 0.45, green: 0.50, blue: 0.85) // lighter periwinkle blue
+        }
+    }
+    
+    // Get navigation bar text color
+    var navigationTextColor: Color {
+        return Color.primary // All themes use primary color now
+    }
+    
+    // Get appropriate accent color based on appearance mode
+    func getAccentColor(for colorScheme: ColorScheme) -> Color {
+        return self.accentColor // No special handling needed anymore
+    }
+    
     var gradient: LinearGradient {
         switch self {
         case .defaultTheme:
@@ -119,12 +151,12 @@ enum NavigationBarTheme: String, CaseIterable, Identifiable {
                 endPoint: .trailing
             )
         case .midnight:
-            // Azul noche → Índigo profundo → Púrpura oscuro
+            // Lighter midnight theme → Periwinkle → Soft lavender → Light blue
             return LinearGradient(
                 gradient: Gradient(colors: [
-                    Color(red: 0.03, green: 0.11, blue: 0.23), // deep navy
-                    Color(red: 0.20, green: 0.22, blue: 0.60), // deep indigo-blue
-                    Color(red: 0.31, green: 0.15, blue: 0.44)  // dark purple
+                    Color(red: 0.45, green: 0.50, blue: 0.85), // periwinkle blue
+                    Color(red: 0.60, green: 0.55, blue: 0.90), // soft lavender
+                    Color(red: 0.70, green: 0.80, blue: 0.95)  // light blue
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
@@ -174,9 +206,9 @@ enum NavigationBarTheme: String, CaseIterable, Identifiable {
             ]
         case .midnight:
             return [
-                Color(red: 0.03, green: 0.11, blue: 0.23),
-                Color(red: 0.20, green: 0.22, blue: 0.60),
-                Color(red: 0.31, green: 0.15, blue: 0.44)
+                Color(red: 0.45, green: 0.50, blue: 0.85), // periwinkle blue
+                Color(red: 0.60, green: 0.55, blue: 0.90), // soft lavender
+                Color(red: 0.70, green: 0.80, blue: 0.95)  // light blue
             ]
         }
     }
@@ -192,5 +224,23 @@ struct Colors {
     func getNavigationBarGradient() -> LinearGradient {
         let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
         return selectedTheme.gradient
+    }
+    
+    // Method to get the accent color for the selected theme
+    func getCurrentAccentColor() -> Color {
+        let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
+        return selectedTheme.accentColor
+    }
+    
+    // Method to get accent color that adapts to current appearance mode
+    func getCurrentAccentColor(for colorScheme: ColorScheme) -> Color {
+        let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
+        return selectedTheme.getAccentColor(for: colorScheme)
+    }
+    
+    // Method to get navigation bar text color
+    func getNavigationTextColor() -> Color {
+        let selectedTheme = NavigationBarTheme(rawValue: SettingsManager.shared.selectedNavigationTheme) ?? .defaultTheme
+        return selectedTheme.navigationTextColor
     }
 }
