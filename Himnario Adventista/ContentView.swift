@@ -9,12 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var favoritesManager = FavoritesManager()
-//    @AppStorage("isDarkMode") private var isDarkMode = false
     @StateObject private var playbackState = AudioPlaybackState()
     @StateObject private var settings = SettingsManager.shared
     @StateObject private var reviewManager = ReviewManager.shared
-    // Persist font size (if needed globally)
-//    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
     let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
     let himnarioViejo: [Himnario] = Bundle.main.decode("himnarioViejo.json")
@@ -28,77 +25,103 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea(.all)
+            LinearGradient(
+                colors: [Color(.systemBackground), Color(.systemGroupedBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
             TabView {
-                // First Tab: Himnario List with segmented Picker.
                 NavigationView {
-                    VStack {
-                        Picker("Selecciona el Himnario", selection: $selectedHimnario) {
-                            ForEach(himnarios, id: \.self) { item in
-                                Text(item)
+                    VStack(spacing: 0) {
+                        VStack(spacing: 16) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Himnario")
+                                        .font(.largeTitle)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.primary)
+                                    Text("Adventista")
+                                        .font(.title3)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
                             }
+                            .padding(.horizontal, 20)
+                            
+                            Picker("Selecciona el Himnario", selection: $selectedHimnario) {
+                                ForEach(himnarios, id: \.self) { item in
+                                    Text(item == "Himnario Nuevo" ? "Nuevo" : "Antiguo")
+                                        .tag(item)
+                                }
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                            .padding(.horizontal, 20)
+                            .tint(Colors.shared.getCurrentAccentColor())
                         }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding()
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .fill(.ultraThinMaterial)
+                                .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.1), radius: 10, x: 0, y: 5)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                        .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
                         
                         HimnarioView(himnos: selectedHimnario == "Himnario Nuevo" ? himnarioNuevo : himnarioViejo)
                             .id(selectedHimnario)
                     }
-                    .navigationTitle("Himnario")
-                    .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-                    .toolbarBackground(.visible, for: .navigationBar)
-                    .navigationBarBackButtonHidden()
+                    .navigationBarHidden(true)
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
-                    Label("Himnario", systemImage: "music.note.list")
+                    Label("Himnario", systemImage: "music.note")
                 }
                 .environmentObject(favoritesManager)
                 .environmentObject(playbackState)
 
-                // Second Tab: Favorites.
-
                 FavoriteView()
-                    .navigationTitle("Favoritos")
-
                     .tabItem {
-                        Label("Favoritos", systemImage: "star")
+                        Label("Favoritos", systemImage: "heart.fill")
                     }
                     .environmentObject(favoritesManager)
                     .environmentObject(playbackState)
 
-                // Third Tab: Settings.
                 NavigationView {
                     SettingsView()
-                        .navigationTitle("Configuración")
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
-                    Label("Configuraciónes", systemImage: "gearshape")
+                    Label("Configuración", systemImage: "gearshape.fill")
                 }
             }
             .preferredColorScheme(settings.isDarkMode ? .dark : .light)
+            .tint(Colors.shared.getCurrentAccentColor())
             .environmentObject(settings)
             .environmentObject(reviewManager)
             
-            // Review prompt overlay
             if settings.showReviewPrompt {
                 ReviewPromptView(
                     isPresented: $settings.showReviewPrompt,
                     onReviewAction: {
                         reviewManager.userLeftReview()
                     },
-                    onDismiss: {
-                        // Just dismiss, no additional action needed
-                    }
+                    onDismiss: {}
                 )
                 .zIndex(1000)
             }
         }
         .onAppear {
-            // Track app launch when ContentView appears
             reviewManager.trackAppLaunch()
+            updateTabBarAppearance()
+        }
+        .onChange(of: settings.selectedNavigationTheme) { _ in
+            updateTabBarAppearance()
         }
     }
     
@@ -106,9 +129,29 @@ struct ContentView: View {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor.systemBackground
-        
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
+    private func updateTabBarAppearance() {
+        DispatchQueue.main.async {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.systemBackground
+            
+            let accentUIColor = UIColor(Colors.shared.getCurrentAccentColor())
+            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+                .foregroundColor: accentUIColor
+            ]
+            appearance.stackedLayoutAppearance.selected.iconColor = accentUIColor
+            appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+                .foregroundColor: UIColor.systemGray
+            ]
+            appearance.stackedLayoutAppearance.normal.iconColor = UIColor.systemGray
+            
+            UITabBar.appearance().standardAppearance = appearance
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
     }
 }
 

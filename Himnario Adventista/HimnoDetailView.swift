@@ -13,103 +13,199 @@ struct HimnoDetailView: View {
     @EnvironmentObject var playbackState: AudioPlaybackState
     @EnvironmentObject var reviewManager: ReviewManager
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var settings: SettingsManager
 
     let himno: Himnario
 
-    // Persist font size using AppStorage.
-    @EnvironmentObject var settings: SettingsManager
-
     var body: some View {
-        NavigationView {
-            VStack {
-                // Main text display.
-                HStack {
-                    Spacer()
-                    Button(action: toggleFavorite) {
-                        Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
-                              ? "star.fill" : "star")
-                        .foregroundColor(.yellow)
-                        .font(.largeTitle)
-                        .padding()
+        ZStack(alignment: .bottom) {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header card
+                    VStack(spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Himno #\(himno.title)")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                
+                                HStack(spacing: 12) {
+                                    Text(himno.himnarioVersion)
+                                        .font(.subheadline)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(
+                                            Capsule()
+                                                .fill(himno.himnarioVersion == "Nuevo" ? Colors.shared.getCurrentAccentColor().opacity(0.1) : Color.orange.opacity(0.1))
+                                        )
+                                        .foregroundColor(himno.himnarioVersion == "Nuevo" ? Colors.shared.getCurrentAccentColor() : .orange)
+                                    
+                                    if favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "heart.fill")
+                                                .foregroundColor(.red)
+                                            Text("Favorito")
+                                        }
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.red.opacity(0.1))
+                                        .foregroundColor(.red)
+                                        .cornerRadius(6)
+                                    }
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: toggleFavorite) {
+                                ZStack {
+                                    Circle()
+                                        .fill(favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) ? Color.red.opacity(0.1) : Color(.systemGray5))
+                                        .frame(width: 50, height: 50)
+                                    
+                                    Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) ? "heart.fill" : "heart")
+                                        .font(.title2)
+                                        .foregroundColor(favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) ? .red : .gray)
+                                }
+                            }
+                            .scaleEffect(favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) ? 1.1 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion))
+                        }
                     }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                            .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.1), radius: 15, x: 0, y: 8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .strokeBorder(Colors.shared.getCurrentAccentColor().opacity(0.2), lineWidth: 1)
+                            )
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text("Letra")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("Tamaño: \(Int(settings.fontSize))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Text(himno.himno)
+                            .font(.system(size: settings.fontSize))
+                            .lineSpacing(8)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                            .shadow(color: .black.opacity(0.05), radius: 12, x: 0, y: 6)
+                    )
+                    .padding(.horizontal, 16)
+                    
+                   
+                    
+                    Spacer(minLength: playbackState.isPlaying ? 120 : 100)
                 }
-                ScrollView {
-                    Text(himno.himno)
-                        .font(.system(size: settings.fontSize))
-                        .padding()
-                }
-                
-                // Instead of inline audio controls, we embed the global AudioControlView.
-                AudioControlView(himno: himno)
-                    .environmentObject(playbackState)
-                    .environmentObject(favoritesManager)
-                
-                
-                Spacer()
+                .padding(.top, 16)
             }
-            .navigationBarItems(leading: backButton)
-            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-            .navigationTitle("#\(himno.title)")
-            .toolbarBackground(.visible, for: .navigationBar)
-            .navigationBarTitleDisplayMode(.inline)
+            // Audio controls
+            AudioControlView(himno: himno)
+                .environmentObject(playbackState)
+                .environmentObject(favoritesManager)
+            .background(Color(.systemGroupedBackground))
             
+            // Floating audio controls when playing
+            if playbackState.isPlaying && !playbackState.himnoTitle.isEmpty {
+                VStack(spacing: 0) {
+                    ProgressView(value: ProgressBarTimer.instance.progress)
+                        .tint(Colors.shared.getCurrentAccentColor())
+                        .scaleEffect(y: 2)
+                    
+                    HStack(spacing: 16) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(playbackState.himnoTitle)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                                .lineLimit(1)
+                            Text("Reproduciendo")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            AudioPlayerManager.shared.playPause()
+                            if let status = AudioPlayerManager.shared.audioPlayer?.timeControlStatus {
+                                playbackState.isPlaying = (status == .playing)
+                            }
+                        }) {
+                            Image(systemName: playbackState.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Colors.shared.getCurrentAccentColor())
+                                .clipShape(Circle())
+                        }
+                        
+                        Button(action: {
+                            AudioPlayerManager.shared.stop()
+                            AudioPlayerManager.shared.audioPlayer = nil
+                            playbackState.progress = 0
+                            playbackState.isPlaying = false
+                        }) {
+                            Image(systemName: "stop.fill")
+                                .font(.title3)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial)
+                }
+                .background(
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                        .ignoresSafeArea(.all, edges: .bottom)
+                )
+                .transition(.move(edge: .bottom))
+                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: playbackState.isPlaying)
+            }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .onAppear {
-            // Track hymn view for review prompt
-            reviewManager.trackHymnoViewed()
-        }
-//        .onAppear {
-//            
-//            setAudioRequirement()
-//            
-//            if AudioPlayerManager.shared.coritoRate == 0.0 {
-//                playbackState.himnoTitle = himno.title
-//            }
-//        }
+        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .onAppear { reviewManager.trackHymnoViewed() }
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
             playbackState.isPlaying = false
-        }
-    }
-                                
-    private var backButton: some View {
-        Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            Image(systemName: "arrow.left")
-                .foregroundColor(Color.primary)
         }
     }
     
     private func toggleFavorite() {
         let wasFavorite = favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
-        
-        if wasFavorite {
-            favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
-        } else {
-            favoritesManager.addToFavorites(himno: himno)
-            // Track favorite added for review prompt
-            reviewManager.trackFavoriteAdded()
-        }
-    }
-    
-    // MARK: - Audio Functions
-    
-    func loadAudio() {
-        playbackState.himnoTitle = himno.title
-        
-        AudioBrain.instance.getTrack {
-            DispatchQueue.main.async {
-                print("Track loaded")
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            if wasFavorite {
+                favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
+            } else {
+                favoritesManager.addToFavorites(himno: himno)
+                reviewManager.trackFavoriteAdded()
             }
         }
     }
     
-    func setAudioRequirement() {
-        AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
-                                              indexC: (himno.id - 1),
-                                              isVocal: playbackState.isVocal)
-    }
+    func loadAudio() { playbackState.himnoTitle = himno.title; AudioBrain.instance.getTrack { DispatchQueue.main.async {} } }
+    func setAudioRequirement() { AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion, indexC: (himno.id - 1), isVocal: playbackState.isVocal) }
 }
 
 #Preview {
@@ -117,11 +213,12 @@ struct HimnoDetailView: View {
     let playbackState = AudioPlaybackState()
     HimnoDetailView(
         himno: Himnario(id: 1,
-                        title: "Sample Himno",
-                        himno: "Sample lyrics for the himno.",
+                        title: "Santo, Santo, Santo",
+                        himno: "Santo, Santo, Santo, Señor omnipotente. Siempre el labio mío loores te dará. Santo, Santo, Santo, ten piedad benigna, Dios en tres personas, bendita Trinidad.",
                         isFavorito: false,
                         himnarioVersion: "Nuevo")
     )
     .environmentObject(favoritesManager)
     .environmentObject(playbackState)
+    .environmentObject(SettingsManager.shared)
 }

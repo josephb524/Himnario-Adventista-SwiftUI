@@ -5,7 +5,6 @@
 //  Created by Jose Pimentel on 3/2/25.
 //
 
-
 import SwiftUI
 
 struct FavoriteView: View {
@@ -18,82 +17,149 @@ struct FavoriteView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                SearchBar(text: $searchText, onCommit: {
-                    himnoSearchResult = himnoSearch.search(query: searchText, himnos: favoritesManager.favoriteHimnos)
-                    isSearching = !searchText.isEmpty
-                }, onClear: {
-                    searchText = ""
-                    isSearching = false
-                    himnoSearchResult = []
-                })
-                .padding(.horizontal)
-                
-                List {
-                    // If the user is searching
-                    if isSearching {
-                        // If the search results are empty, show a placeholder message
-                        if himnoSearchResult.isEmpty {
-                            Text("No results found.")
-                                .foregroundColor(.gray)
-                        } else {
-                            // Otherwise, show the search results
-                            ForEach(himnoSearchResult) { himno in
-                                NavigationLink(destination: HimnoDetailView(himno: himno)
-                                    .environmentObject(favoritesManager)
-                                    .environmentObject(playbackState)) {
-                                        VStack(alignment: .leading) {
-                                            Text(himno.title)
-                                                .font(.headline)
-                                            Text(himno.himno)
-                                                .lineLimit(2)
-                                                .font(.subheadline)
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
-                            }
-                            .onDelete(perform: delete)
-                        }
-                    } else {
-                        // Not searching: show all favorites
-                        if favoritesManager.favoriteHimnos.isEmpty {
-                            VStack {
-                                Image(systemName: "star")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.gray)
-                                Text("No hay favoritos aún")
-                                    .font(.headline)
-                                    .foregroundColor(.gray)
-                                Text("Agrega himnos a favoritos para verlos aquí")
+            VStack(spacing: 0) {
+                // Header section
+                VStack(spacing: 16) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Favoritos")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            if !favoritesManager.favoriteHimnos.isEmpty {
+                                Text("\(favoritesManager.favoriteHimnos.count) himnos guardados")
                                     .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(.secondary)
                             }
-                            .padding()
-                        } else {
-                            ForEach(favoritesManager.favoriteHimnos) { himno in
-                                NavigationLink(destination: HimnoDetailView(himno: himno)
-                                    .environmentObject(favoritesManager)
-                                    .environmentObject(playbackState)) {
-                                        VStack(alignment: .leading) {
-                                            Text(himno.title)
-                                                .font(.headline)
-                                            Text(himno.himno)
-                                                .lineLimit(2)
-                                                .font(.subheadline)
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
+                        }
+                        Spacer()
+                        
+                        // Heart icon with count
+                        if !favoritesManager.favoriteHimnos.isEmpty {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.red.opacity(0.1))
+                                    .frame(width: 48, height: 48)
+                                Image(systemName: "heart.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.red)
                             }
-                            .onDelete(perform: delete)
                         }
                     }
+                    .padding(.horizontal, 20)
+                    
+                    if !favoritesManager.favoriteHimnos.isEmpty {
+                        SearchBar(text: $searchText, onCommit: {
+                            himnoSearchResult = himnoSearch.search(query: searchText, himnos: favoritesManager.favoriteHimnos)
+                            isSearching = !searchText.isEmpty
+                        }, onClear: {
+                            searchText = ""
+                            isSearching = false
+                            himnoSearchResult = []
+                        })
+                        .padding(.horizontal, 20)
+                    }
                 }
-                .padding(2)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+                
+                // Content
+                if favoritesManager.favoriteHimnos.isEmpty {
+                    // Beautiful empty state
+                    VStack(spacing: 24) {
+                        Spacer()
+                        
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(
+                                    colors: [Color.red.opacity(0.2), Color.red.opacity(0.1)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 120, height: 120)
+                            
+                            Image(systemName: "heart")
+                                .font(.system(size: 48))
+                                .foregroundColor(.red)
+                        }
+                        
+                        VStack(spacing: 12) {
+                            Text("No hay favoritos aún")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            
+                            Text("Toca el ícono de estrella en cualquier himno para agregarlo a tus favoritos")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+                        }
+                        
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color(.systemGroupedBackground))
+                } else {
+                    // Favorites list
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            if isSearching {
+                                if himnoSearchResult.isEmpty {
+                                    VStack(spacing: 16) {
+                                        Image(systemName: "magnifyingglass")
+                                            .font(.system(size: 48))
+                                            .foregroundColor(.gray)
+                                        Text("No se encontraron himnos")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                    }
+                                    .padding(.top, 60)
+                                } else {
+                                    ForEach(himnoSearchResult) { himno in
+                                        NavigationLink(destination: HimnoDetailView(himno: himno)
+                                            .environmentObject(favoritesManager)
+                                            .environmentObject(playbackState)) {
+                                            HymnRowView(himno: himno)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                        .swipeActions(edge: .trailing) {
+                                            Button("Eliminar", role: .destructive) {
+                                                favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                ForEach(favoritesManager.favoriteHimnos) { himno in
+                                    NavigationLink(destination: HimnoDetailView(himno: himno)
+                                        .environmentObject(favoritesManager)
+                                        .environmentObject(playbackState)) {
+                                        HymnRowView(himno: himno)
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .swipeActions(edge: .trailing) {
+                                        Button("Eliminar", role: .destructive) {
+                                            favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 100)
+                    }
+                    .background(Color(.systemGroupedBackground))
+                }
             }
-            .navigationTitle("Favoritos")
-            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationBarHidden(true)
+            .background(Color(.systemGroupedBackground))
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
@@ -105,13 +171,9 @@ struct FavoriteView: View {
     }
 }
 
-//#Preview {
-//    let sampleHimnos: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-//    let favoritesManager = FavoritesManager()
-//     @StateObject private var favoritesManager = FavoritesManager()
-//    NavigationView {
-//        FavoriteView()
-//    }
-//    .environmentObject(favoritesManager)
-//}
+#Preview {
+    FavoriteView()
+        .environmentObject(FavoritesManager())
+        .environmentObject(AudioPlaybackState())
+}
 
