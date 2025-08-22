@@ -34,9 +34,24 @@ struct HimnoDetailView: View {
                     }
                 }
                 ScrollView {
-                    Text(himno.himno)
-                        .font(.system(size: settings.fontSize))
-                        .padding()
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(himno.himno)
+                            .font(.system(size: settings.fontSize))
+                            .lineSpacing(6)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 8)
+                    .padding([.horizontal, .bottom])
                 }
                 
                 // Instead of inline audio controls, we embed the global AudioControlView.
