@@ -113,7 +113,7 @@ struct HimnoDetailView: View {
     func loadAudio() {
         playbackState.himnoTitle = himno.title
         
-        AudioBrain.instance.getTrack {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal ? himno.himnoID : himno.pistaID ) {
             DispatchQueue.main.async {
                 print("Track loaded")
             }
@@ -134,7 +134,8 @@ struct HimnoDetailView: View {
         himno: Himnario(id: 1,
                         title: "Sample Himno",
                         himno: "Sample lyrics for the himno.",
-                        isFavorito: false,
+                        himnoID: "XO2wy",
+                        pistaID: "ryX7g",
                         himnarioVersion: "Nuevo")
     )
     .environmentObject(favoritesManager)

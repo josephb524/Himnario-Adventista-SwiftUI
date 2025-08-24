@@ -116,7 +116,7 @@ struct AudioControlView: View {
                                              isVocal: playbackState.isVocal)
         
         AudioPlayerManager.shared.stop()
-        AudioBrain.instance.getTrack {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal ? himno.himnoID : himno.pistaID) {
             DispatchQueue.main.async {
                 playbackState.progress = 0
                 AudioPlayerManager.shared.play()
