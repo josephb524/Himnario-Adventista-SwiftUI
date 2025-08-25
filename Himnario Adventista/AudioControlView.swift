@@ -12,6 +12,7 @@ import AVFoundation
 struct AudioControlView: View {
     @EnvironmentObject var playbackState: AudioPlaybackState
     @EnvironmentObject var favoritesManager: FavoritesManager
+    @EnvironmentObject var settings: SettingsManager
     @ObservedObject var progressTimer = ProgressBarTimer.instance
     let himno: Himnario
     
@@ -71,6 +72,7 @@ struct AudioControlView: View {
                                 ? "pause.fill"
                                 : "play.fill")
                                 .font(.title2)
+                                .foregroundColor(Colors.shared.getCurrentAccentColor())
                                 .transition(.scale.combined(with: .opacity))
                         }
                     }
@@ -90,10 +92,11 @@ struct AudioControlView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if !isExpanded {
-                    // Mini progress bar in compact mode
+                    // Mini progress bar in compact mode with gradient
                     ProgressView(value: progressTimer.progress)
                         .frame(height: 2)
                         .opacity(0.7)
+                        .tint(Colors.shared.getCurrentAccentColor())
                 }
             }
             .contentShape(Rectangle())
@@ -145,6 +148,7 @@ struct AudioControlView: View {
                 
                 ProgressView(value: progressTimer.progress)
                     .padding(.horizontal, 16)
+                    .tint(Colors.shared.getCurrentAccentColor())
             }
             
             // Full control buttons
@@ -154,8 +158,10 @@ struct AudioControlView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "stop.circle")
                             .font(.title)
+                            .foregroundColor(Colors.shared.getCurrentAccentColor())
                         Text("Stop")
                             .font(.caption2)
+                            .foregroundColor(Colors.shared.getCurrentAccentColor())
                     }
                 }
                 .disabled(AudioBrain.instance.isLoading)
@@ -174,6 +180,7 @@ struct AudioControlView: View {
                                 ? "pause.fill"
                                 : "play.fill")
                                 .font(.system(size: 44))
+                                .foregroundColor(Colors.shared.getCurrentAccentColor())
                                 .transition(.scale.combined(with: .opacity))
                         }
                     }
@@ -184,8 +191,10 @@ struct AudioControlView: View {
                     VStack(spacing: 4) {
                         Image(systemName: playbackState.isVocal ? "pianokeys" : "music.mic")
                             .font(.title)
+                            .foregroundColor(Colors.shared.getCurrentAccentColor())
                         Text(playbackState.isVocal ? "Pista" : "Canto")
                             .font(.caption2)
+                            .foregroundColor(Colors.shared.getCurrentAccentColor())
                     }
                 }
                 .disabled(AudioBrain.instance.isLoading || himno.himnarioVersion == "Antiguo")
@@ -244,6 +253,7 @@ struct AudioControlView: View {
         .environmentObject(AudioPlaybackState())
         .environmentObject(FavoritesManager())
         .environmentObject(ProgressBarTimer.instance)
+        .environmentObject(SettingsManager.shared)
 }
 
 

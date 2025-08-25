@@ -57,6 +57,7 @@ struct HimnoDetailView: View {
             AudioControlView(himno: himno)
                 .environmentObject(playbackState)
                 .environmentObject(favoritesManager)
+                .environmentObject(settings)
             
             
             Spacer()
