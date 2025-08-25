@@ -20,56 +20,53 @@ struct HimnoDetailView: View {
     @EnvironmentObject var settings: SettingsManager
 
     var body: some View {
-        NavigationView {
-            VStack {
-                // Main text display.
-                HStack {
-                    Spacer()
-                    Button(action: toggleFavorite) {
-                        Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
-                              ? "star.fill" : "star")
-                        .foregroundColor(.yellow)
-                        .font(.largeTitle)
-                        .padding()
-                    }
-                }
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(himno.himno)
-                            .font(.system(size: settings.fontSize))
-                            .lineSpacing(6)
-                            .foregroundColor(.primary)
-                    }
-                    .padding(20)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color(.secondarySystemBackground))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-                    )
-                    .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 8)
-                    .padding([.horizontal, .bottom])
-                }
-                
-                // Instead of inline audio controls, we embed the global AudioControlView.
-                AudioControlView(himno: himno)
-                    .environmentObject(playbackState)
-                    .environmentObject(favoritesManager)
-                
-                
+        VStack {
+            // Main text display.
+            HStack {
                 Spacer()
+                Button(action: toggleFavorite) {
+                    Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
+                          ? "star.fill" : "star")
+                    .foregroundColor(.yellow)
+                    .font(.largeTitle)
+                    .padding()
+                }
             }
-            .navigationBarItems(leading: backButton)
-            .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-            .navigationTitle("#\(himno.title)")
-            .toolbarBackground(.visible, for: .navigationBar)
-            .navigationBarTitleDisplayMode(.inline)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(himno.himno)
+                        .font(.system(size: settings.fontSize))
+                        .lineSpacing(6)
+                        .foregroundColor(.primary)
+                }
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+                )
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 8)
+                .padding([.horizontal, .bottom])
+            }
             
+            // Instead of inline audio controls, we embed the global AudioControlView.
+            AudioControlView(himno: himno)
+                .environmentObject(playbackState)
+                .environmentObject(favoritesManager)
+            
+            
+            Spacer()
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationBarItems(leading: backButton)
+        .navigationBarBackButtonHidden(true)
+        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
+        .navigationTitle("#\(himno.title)")
+        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Track hymn view for review prompt
             reviewManager.trackHymnoViewed()

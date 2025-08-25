@@ -47,8 +47,8 @@ struct ContentView: View {
                     }
                     .navigationTitle("Himnario")
                     .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
+                    .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .tabBar)
                     .toolbarBackground(.visible, for: .navigationBar)
-                    .navigationBarBackButtonHidden()
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {

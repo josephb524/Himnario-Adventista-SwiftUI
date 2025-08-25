@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NavigationBarThemeView: View {
     @EnvironmentObject var settings: SettingsManager
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         Form {
@@ -29,11 +30,24 @@ struct NavigationBarThemeView: View {
                 .padding(.vertical, 8)
             }
         }
+        .navigationBarItems(leading: backButton)
+        .navigationBarBackButtonHidden(true)
         .navigationTitle("Tema de Navegación")
         .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }
+    
+    private var backButton: some View {
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "arrow.left")
+                .foregroundColor(Color.primary)
+        }
+    }
 }
+
+
 
 struct NavigationThemeCard: View {
     let theme: NavigationBarTheme
