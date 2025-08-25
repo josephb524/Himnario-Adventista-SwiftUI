@@ -8,6 +8,7 @@
 
 import AVFoundation
 import SwiftUI
+import MediaPlayer
 
 final class AudioPlayerManager {
     static let shared = AudioPlayerManager()
@@ -16,15 +17,20 @@ final class AudioPlayerManager {
     
     private(set) var coritoRate: Float = 0.0
     var trackDuration: Int = 0
+    var currentTrackTitle: String = ""
     
-    private init() {}
+    private init() {
+        setupRemoteTransportControls()
+    }
     
-    func loadTrack(from url: URL, duration: Int? = nil) {
+    func loadTrack(from url: URL, duration: Int? = nil, title: String = "") {
         audioPlayer = AVPlayer(url: url)
         audioPlayer?.automaticallyWaitsToMinimizeStalling = false
+        currentTrackTitle = title
         if let dur = duration {
             trackDuration = dur
         }
+        updateNowPlayingInfo()
     }
     
     func playPause() {
@@ -38,6 +44,7 @@ final class AudioPlayerManager {
             ProgressBarTimer.instance.startTimer()
         }
         coritoRate = player.rate
+        updateNowPlayingInfo()
     }
     
     func play() {
@@ -46,6 +53,7 @@ final class AudioPlayerManager {
         player.play()
         coritoRate = player.rate
         ProgressBarTimer.instance.startTimer()
+        updateNowPlayingInfo()
     }
     
     func stop() {
@@ -54,6 +62,7 @@ final class AudioPlayerManager {
         coritoRate = 0.0
         ProgressBarTimer.instance.stopTimer()
         ProgressBarTimer.instance.resetProgress()
+        clearNowPlayingInfo()
         //AudioBrain.instance.trackTime = ""
     }
     
@@ -63,10 +72,69 @@ final class AudioPlayerManager {
     
     private func configureAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
+            // Configure for background playback
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             debugPrint("Audio session error:", error.localizedDescription)
         }
+    }
+    
+    private func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        // Enable play command
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { [weak self] _ in
+            self?.play()
+            return .success
+        }
+        
+        // Enable pause command
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { [weak self] _ in
+            self?.audioPlayer?.pause()
+            ProgressBarTimer.instance.stopTimer()
+            self?.updateNowPlayingInfo()
+            return .success
+        }
+        
+        // Enable stop command
+        commandCenter.stopCommand.isEnabled = true
+        commandCenter.stopCommand.addTarget { [weak self] _ in
+            self?.stop()
+            return .success
+        }
+        
+        // Disable other commands we don't support
+        commandCenter.nextTrackCommand.isEnabled = false
+        commandCenter.previousTrackCommand.isEnabled = false
+        commandCenter.skipForwardCommand.isEnabled = false
+        commandCenter.skipBackwardCommand.isEnabled = false
+    }
+    
+    private func updateNowPlayingInfo() {
+        var nowPlayingInfo = [String: Any]()
+        
+        nowPlayingInfo[MPMediaItemPropertyTitle] = currentTrackTitle.isEmpty ? "Himnario Adventista" : currentTrackTitle
+        nowPlayingInfo[MPMediaItemPropertyArtist] = "Himnario Adventista"
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = "Himnos"
+        
+        if let player = audioPlayer {
+            let currentTime = CMTimeGetSeconds(player.currentTime())
+            nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentTime
+            
+            if trackDuration > 0 {
+                nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = Double(trackDuration)
+            }
+            
+            nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
+        }
+        
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    private func clearNowPlayingInfo() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
 }

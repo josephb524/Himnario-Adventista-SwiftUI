@@ -38,7 +38,7 @@ class AudioBrain {
      Retrieves track metadata from the playlist URL, builds the streaming URL,
      and loads the track into the AudioPlayerManager.
      */
-    func getTrack(by trackId: String, completion: @escaping () -> Void) {
+    func getTrack(by trackId: String, title: String = "", completion: @escaping () -> Void) {
         isLoading = true
         
         self.trackId = trackId
@@ -76,7 +76,7 @@ class AudioBrain {
                     return
                 }
                 
-                AudioPlayerManager.shared.loadTrack(from: streamURL, duration: duration)
+                AudioPlayerManager.shared.loadTrack(from: streamURL, duration: duration, title: title)
                 self.cleanupAndComplete(completion: completion)
             }.resume()
         }

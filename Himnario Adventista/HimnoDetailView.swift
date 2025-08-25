@@ -111,7 +111,7 @@ struct HimnoDetailView: View {
     func loadAudio() {
         playbackState.himnoTitle = himno.title
         
-        AudioBrain.instance.getTrack(by: playbackState.isVocal ? himno.himnoID : himno.pistaID ) {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal ? himno.himnoID : himno.pistaID, title: himno.title) {
             DispatchQueue.main.async {
                 print("Track loaded")
             }
