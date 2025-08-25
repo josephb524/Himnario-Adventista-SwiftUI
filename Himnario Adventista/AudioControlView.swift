@@ -148,7 +148,7 @@ struct AudioControlView: View {
             }
             
             // Full control buttons
-            HStack(spacing: 40) {
+            HStack(spacing: 80) {
                 // Stop button
                 Button(action: stopPlayback) {
                     VStack(spacing: 4) {
@@ -238,14 +238,12 @@ struct AudioControlView: View {
     }
 }
 
-//#Preview {
-//    AudioControlView(playbackState: <#T##AudioPlaybackState#>, favoritesManager: <#T##FavoritesManager#>, progressTimer: <#T##arg#>, himno: <#T##Himnario#>)
-//}
+#Preview {
+    let himno: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+    AudioControlView(himno: himno[0])
+        .environmentObject(AudioPlaybackState())
+        .environmentObject(FavoritesManager())
+        .environmentObject(ProgressBarTimer.instance)
+}
 
-//struct AudioControlView_Previews: PreviewProvider {
-//    let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-//    static var previews: some View {
-//        AudioControlView(himno: himnarioNuevo[0])
-//            .environmentObject(AudioPlaybackState())
-//    }
-//}
+
