@@ -71,7 +71,7 @@ struct ContentView: View {
                 // Third Tab: Settings.
                 NavigationView {
                     SettingsView()
-                        .navigationTitle("Configuración")
+                        .navigationTitle("Configuraciónes")
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
