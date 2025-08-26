@@ -13,4 +13,5 @@ class AudioPlaybackState: ObservableObject {
     @Published var progress: Float = 0.0
     @Published var isPlaying: Bool = false
     @Published var isVocal: Bool = true
+    @Published var numericId: Int = 0
 }

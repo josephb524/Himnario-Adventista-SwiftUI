@@ -34,14 +34,23 @@ struct AudioControlView: View {
             }
         }
         .background(
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: isExpanded ? 20 : 16, style: .continuous)
+                .fill(Colors.shared.getCurrentAccentColor())
         )
+        .overlay(alignment: .top) {
+            // Top contrast band when expanded
+            if isExpanded {
+                RoundedBottomCorners(radius: 24)
+                    .fill(Color.white.opacity(0.16))
+                    .frame(height: 110)
+                    .allowsHitTesting(false)
+            }
+        }
         .overlay(
             RoundedRectangle(cornerRadius: 15, style: .continuous)
                 .stroke(Color.primary.opacity(0.08), lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.10), radius: 10, x: 0, y: 6)
         .padding(.horizontal)
         .animation(.easeInOut(duration: 0.25), value: isExpanded)
         .gesture(
@@ -56,61 +65,77 @@ struct AudioControlView: View {
     
     private var compactHeader: some View {
         HStack(spacing: 12) {
-            // Play/Pause button appears only in compact mode to avoid duplication
+            // Play/Pause button (compact)
             if !isExpanded {
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         togglePlayPause()
                     }
                 }) {
-                    Group {
-                        if AudioBrain.instance.isLoading {
-                            LoadingIndicatorView()
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: (playbackState.isPlaying && progressTimer.progress > 0.0)
-                                ? "pause.fill"
-                                : "play.fill")
-                                .font(.title2)
-                                .foregroundColor(Colors.shared.getCurrentAccentColor())
-                                .transition(.scale.combined(with: .opacity))
+                    ZStack {
+                        // Background circle
+                        Circle()
+                            .fill(Color.white)
+                        
+                        // Progress ring
+                        Circle()
+                            .stroke(Color.white.opacity(0.3), lineWidth: 3)
+                        
+                        Circle()
+                            .trim(from: 0, to: CGFloat(progressTimer.progress))
+                            .stroke(
+                                Colors.shared.getCurrentAccentColor(),
+                                style: StrokeStyle(lineWidth: 3, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .animation(.easeInOut(duration: 0.3), value: progressTimer.progress)
+                        
+                        // Play/pause icon
+                        Group {
+                            if AudioBrain.instance.isLoading {
+                                LoadingIndicatorView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Image(systemName: (playbackState.isPlaying && progressTimer.progress > 0.0)
+                                    ? "pause.fill"
+                                    : "play.fill")
+                                    .font(.headline)
+                                    .foregroundColor(Colors.shared.getCurrentAccentColor())
+                                    .transition(.scale.combined(with: .opacity))
+                            }
                         }
                     }
-                    .frame(width: 32, height: 32)
+                    .frame(width: 36, height: 36)
+                    .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 3)
                 }
             }
             
-            // Title and mini progress
-            VStack(alignment: .leading, spacing: 4) {
-                Text(playbackState.himnoTitle.isEmpty ? himno.title : playbackState.himnoTitle)
-                    .font(.headline)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                    .allowsTightening(true)
-                    .truncationMode(.tail)
-                    .padding(.vertical, 1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                if !isExpanded {
-                    // Mini progress bar in compact mode with gradient
-                    ProgressView(value: progressTimer.progress)
-                        .frame(height: 2)
-                        .opacity(0.7)
-                        .tint(Colors.shared.getCurrentAccentColor())
-                }
-            }
-            .contentShape(Rectangle())
-            .onTapGesture { // tap title area toggles
-                withAnimation(.easeInOut(duration: 0.25)) { isExpanded.toggle() }
-            }
-            
-            Spacer()
-            
-            // Track time (compact)
+            // Title and subtitle - only show when NOT expanded
             if !isExpanded {
-                Text(AudioBrain.instance.trackTime.isEmpty ? "00:00" : AudioBrain.instance.trackTime)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(playbackState.himnoTitle.isEmpty ? himno.title : playbackState.himnoTitle)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .allowsTightening(true)
+                        .truncationMode(.tail)
+                        .padding(.vertical, 1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.white)
+                    
+                    Text("Himno No. \(playbackState.numericId == 0 ? himno.numericId : playbackState.numericId)")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.85))
+                }
+                .contentShape(Rectangle())
+                .onTapGesture { // tap title area toggles
+                    withAnimation(.easeInOut(duration: 0.25)) { isExpanded.toggle() }
+                }
+                
+                Spacer()
+            } else {
+                // When expanded, just show the chevron button centered
+                Spacer()
             }
             
             // Expand/Collapse arrow
@@ -119,9 +144,7 @@ struct AudioControlView: View {
             }) {
                 Image(systemName: isExpanded ? "chevron.down" : "chevron.up")
                     .font(.title3)
-                    .foregroundColor(.primary)
-                    .rotationEffect(.degrees(isExpanded ? 0 : 180))
-                    .animation(.easeInOut(duration: 0.25), value: isExpanded)
+                    .foregroundColor(.white)
             }
             .accessibilityLabel(isExpanded ? "Collapse player" : "Expand player")
         }
@@ -131,77 +154,108 @@ struct AudioControlView: View {
     }
     
     private var expandedContent: some View {
-        VStack(spacing: 14) {
-            // Divider
-            Divider()
-                .padding(.horizontal, 16)
+        VStack(spacing: 16) {
             
-            // Full progress section
-            VStack(spacing: 8) {
-                HStack {
-                    Spacer()
-                    Text(AudioBrain.instance.trackTime.isEmpty ? "00:00" : AudioBrain.instance.trackTime)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+            // Single title/subtitle (keep once)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(playbackState.himnoTitle.isEmpty ? himno.title : playbackState.himnoTitle)
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                    Text("Himno No. \(playbackState.numericId == 0 ? himno.numericId : playbackState.numericId)")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.85))
                 }
-                .padding(.horizontal, 16)
-                
-                ProgressView(value: progressTimer.progress)
-                    .padding(.horizontal, 16)
-                    .tint(Colors.shared.getCurrentAccentColor())
+                Spacer()
             }
+            .padding(.horizontal, 4)
             
-            // Full control buttons
-            HStack(spacing: 80) {
-                // Stop button
-                Button(action: stopPlayback) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "stop.circle")
-                            .font(.title)
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
-                        Text("Stop")
-                            .font(.caption2)
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
-                    }
-                }
-                .disabled(AudioBrain.instance.isLoading)
-                
-                // Main play/pause (larger in expanded mode)
+            // Controls row: centered play/pause, left stop, right Canto/Pista
+            ZStack {
+                // Centered play/pause button
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         togglePlayPause()
                     }
                 }) {
-                    Group {
-                        if AudioBrain.instance.isLoading {
-                            LoadingIndicatorView()
-                        } else {
-                            Image(systemName: (playbackState.isPlaying && progressTimer.progress > 0.0)
-                                ? "pause.fill"
-                                : "play.fill")
-                                .font(.system(size: 44))
-                                .foregroundColor(Colors.shared.getCurrentAccentColor())
-                                .transition(.scale.combined(with: .opacity))
+                    ZStack {
+                        // Background circle
+                        Circle()
+                            .fill(Color.white)
+                            .frame(width: 72, height: 72)
+                        
+                        // Progress ring
+                        Circle()
+                            .stroke(Color.white.opacity(0.3), lineWidth: 4)
+                            .frame(width: 72, height: 72)
+                        
+                        Circle()
+                            .trim(from: 0, to: CGFloat(progressTimer.progress))
+                            .stroke(
+                                Colors.shared.getCurrentAccentColor(),
+                                style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                            )
+                            .frame(width: 72, height: 72)
+                            .rotationEffect(.degrees(-90))
+                            .animation(.easeInOut(duration: 0.3), value: progressTimer.progress)
+                        
+                        // Play/pause icon
+                        Group {
+                            if AudioBrain.instance.isLoading {
+                                LoadingIndicatorView()
+                            } else {
+                                Image(systemName: (playbackState.isPlaying && progressTimer.progress > 0.0)
+                                    ? "pause.fill"
+                                    : "play.fill")
+                                    .font(.system(size: 30, weight: .semibold))
+                                    .foregroundColor(Colors.shared.getCurrentAccentColor())
+                                    .transition(.scale.combined(with: .opacity))
+                            }
                         }
                     }
+                    .shadow(color: Color.black.opacity(0.16), radius: 10, x: 0, y: 6)
                 }
                 
-                // Vocal/Instrumental toggle
-                Button(action: toggleVocalInstrumental) {
-                    VStack(spacing: 4) {
-                        Image(systemName: playbackState.isVocal ? "pianokeys" : "music.mic")
-                            .font(.title)
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
-                        Text(playbackState.isVocal ? "Pista" : "Canto")
-                            .font(.caption2)
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
+                // Leading stop and trailing Canto/Pista capsule on same row
+                HStack {
+                    // Stop button (left)
+                    Button(action: stopPlayback) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.white)
+                            Image(systemName: "stop.fill")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(Colors.shared.getCurrentAccentColor())
+                        }
+                        .frame(width: 44, height: 44)
+                        .shadow(color: Color.black.opacity(0.14), radius: 8, x: 0, y: 4)
                     }
+                    
+                    Spacer()
+                    
+                    // Canto/Pista capsule (right)
+                    Button(action: toggleVocalInstrumental) {
+                        HStack(spacing: 6) {
+                            Text(playbackState.isVocal ? "Canto" : "Pista")
+                            Image(systemName: playbackState.isVocal ? "music.mic" : "pianokeys")
+                        }
+                        .font(.subheadline)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.white)
+                        .foregroundColor(Colors.shared.getCurrentAccentColor())
+                        .clipShape(Capsule())
+                        .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
+                    }
+                    .disabled(AudioBrain.instance.isLoading || himno.himnarioVersion == "Antiguo")
                 }
-                .disabled(AudioBrain.instance.isLoading || himno.himnarioVersion == "Antiguo")
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 4)
             .padding(.bottom, 12)
         }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 12)
     }
     
     private func togglePlayPause() {
@@ -232,6 +286,7 @@ struct AudioControlView: View {
     
     private func startNewSong() {
         playbackState.himnoTitle = himno.title
+        playbackState.numericId = himno.numericId
         AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
                                              indexC: (himno.numericId - 1),
                                              isVocal: playbackState.isVocal)
@@ -254,6 +309,18 @@ struct AudioControlView: View {
         .environmentObject(FavoritesManager())
         .environmentObject(ProgressBarTimer.instance)
         .environmentObject(SettingsManager.shared)
+}
+
+struct RoundedBottomCorners: Shape {
+    var radius: CGFloat
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: [.bottomLeft, .bottomRight],
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
+    }
 }
 
 
