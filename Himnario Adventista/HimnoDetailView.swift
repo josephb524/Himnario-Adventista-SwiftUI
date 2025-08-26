@@ -24,7 +24,28 @@ struct HimnoDetailView: View {
             // Main text display.
             HStack {
                 Text(himno.himnarioVersion)
-                    .foregroundColor(.yellow)
+                    .font(.subheadline)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(himno.himnarioVersion == "Nuevo" ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
+                    )
+                    .foregroundColor(himno.himnarioVersion == "Nuevo" ? .blue : .orange)
+                
+                if favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("Favorito")
+                    }
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.red.opacity(0.1))
+                    .foregroundColor(.red)
+                    .cornerRadius(6)
+                }
                 Spacer()
                 Button(action: toggleFavorite) {
                     Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
