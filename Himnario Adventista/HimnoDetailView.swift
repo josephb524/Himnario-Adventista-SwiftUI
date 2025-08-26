@@ -57,6 +57,16 @@ struct HimnoDetailView: View {
             }
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Letra")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("Tamaño: \(Int(settings.fontSize))")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
                     Text(himno.himno)
                         .font(.system(size: settings.fontSize))
                         .lineSpacing(6)
@@ -150,7 +160,7 @@ struct HimnoDetailView: View {
 
 #Preview {
     let himno: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-    HimnoDetailView(himno: himno[0])
+    HimnoDetailView(himno: himno[3])
         .environmentObject(AudioPlaybackState())
         .environmentObject(FavoritesManager())
         .environmentObject(SettingsManager.shared)
