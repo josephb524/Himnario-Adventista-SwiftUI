@@ -23,6 +23,8 @@ struct HimnoDetailView: View {
         VStack {
             // Main text display.
             HStack {
+                Text(himno.himnarioVersion)
+                    .foregroundColor(.yellow)
                 Spacer()
                 Button(action: toggleFavorite) {
                     Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
@@ -126,16 +128,12 @@ struct HimnoDetailView: View {
 }
 
 #Preview {
-    let favoritesManager = FavoritesManager()
-    let playbackState = AudioPlaybackState()
-    HimnoDetailView(
-        himno: Himnario(id: 1,
-                        title: "Sample Himno",
-                        himno: "Sample lyrics for the himno.",
-                        himnoID: "XO2wy",
-                        pistaID: "ryX7g",
-                        himnarioVersion: "Nuevo")
-    )
-    .environmentObject(favoritesManager)
-    .environmentObject(playbackState)
+    let himno: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+    HimnoDetailView(himno: himno[0])
+        .environmentObject(AudioPlaybackState())
+        .environmentObject(FavoritesManager())
+        .environmentObject(SettingsManager.shared)
+        .environmentObject(ReviewManager.shared)
+        
+   
 }
