@@ -100,7 +100,7 @@ struct FavoriteView: View {
     
     private func delete(at offsets: IndexSet) {
         offsets.map { favoritesManager.favoriteHimnos[$0] }.forEach { himno in
-            favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
+            favoritesManager.removeFromFavorites(id: himno.numericId, himnarioVersion: himno.himnarioVersion)
         }
     }
 }

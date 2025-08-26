@@ -233,7 +233,7 @@ struct AudioControlView: View {
     private func startNewSong() {
         playbackState.himnoTitle = himno.title
         AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
-                                             indexC: (himno.id - 1),
+                                             indexC: (himno.numericId - 1),
                                              isVocal: playbackState.isVocal)
         
         AudioPlayerManager.shared.stop()

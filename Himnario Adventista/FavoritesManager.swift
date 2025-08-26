@@ -19,19 +19,19 @@ class FavoritesManager: ObservableObject {
     }
     
     func addToFavorites(himno: Himnario) {
-        if !favoriteHimnos.contains(where: { $0.id == himno.id && $0.himnarioVersion == himno.himnarioVersion }) {
+        if !favoriteHimnos.contains(where: { $0.numericId == himno.numericId && $0.himnarioVersion == himno.himnarioVersion }) {
             favoriteHimnos.append(himno)
         }
     }
     
     func removeFromFavorites(id: Int, himnarioVersion: String) {
-        if let index = favoriteHimnos.firstIndex(where: { $0.id == id && $0.himnarioVersion == himnarioVersion }) {
+        if let index = favoriteHimnos.firstIndex(where: { $0.numericId == id && $0.himnarioVersion == himnarioVersion }) {
             favoriteHimnos.remove(at: index)
         }
     }
     
     func isFavorite(id: Int, himnarioVersion: String) -> Bool {
-        return favoriteHimnos.contains(where: { $0.id == id && $0.himnarioVersion == himnarioVersion })
+        return favoriteHimnos.contains(where: { $0.numericId == id && $0.himnarioVersion == himnarioVersion })
     }
     
     private func saveFavorites() {

@@ -33,7 +33,7 @@ struct HimnoDetailView: View {
                     )
                     .foregroundColor(himno.himnarioVersion == "Nuevo" ? .blue : .orange)
                 
-                if favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion) {
+                if favoritesManager.isFavorite(id: himno.numericId, himnarioVersion: himno.himnarioVersion) {
                     HStack(spacing: 4) {
                         Image(systemName: "heart.fill")
                             .foregroundColor(.red)
@@ -48,7 +48,7 @@ struct HimnoDetailView: View {
                 }
                 Spacer()
                 Button(action: toggleFavorite) {
-                    Image(systemName: favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
+                    Image(systemName: favoritesManager.isFavorite(id: himno.numericId, himnarioVersion: himno.himnarioVersion)
                           ? "star.fill" : "star")
                     .foregroundColor(.yellow)
                     .font(.largeTitle)
@@ -128,10 +128,10 @@ struct HimnoDetailView: View {
     }
     
     private func toggleFavorite() {
-        let wasFavorite = favoritesManager.isFavorite(id: himno.id, himnarioVersion: himno.himnarioVersion)
+        let wasFavorite = favoritesManager.isFavorite(id: himno.numericId, himnarioVersion: himno.himnarioVersion)
         
         if wasFavorite {
-            favoritesManager.removeFromFavorites(id: himno.id, himnarioVersion: himno.himnarioVersion)
+            favoritesManager.removeFromFavorites(id: himno.numericId, himnarioVersion: himno.himnarioVersion)
         } else {
             favoritesManager.addToFavorites(himno: himno)
             // Track favorite added for review prompt
@@ -153,7 +153,7 @@ struct HimnoDetailView: View {
     
     func setAudioRequirement() {
         AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
-                                              indexC: (himno.id - 1),
+                                              indexC: (himno.numericId - 1),
                                               isVocal: playbackState.isVocal)
     }
 }

@@ -57,25 +57,35 @@ struct SearchBar: UIViewRepresentable {
         searchBar.delegate = context.coordinator
         searchBar.placeholder = "Buscar Himno"
         
-        // Modern styling
+        // Modern styling - pill-shaped
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundImage = UIImage()
-        searchBar.layer.cornerRadius = 12
+        searchBar.layer.cornerRadius = 25
         searchBar.clipsToBounds = true
         
-        // Configure text field
+        // Configure text field with pill shape and search icon
         if let textField = searchBar.searchTextField as? UITextField {
             textField.backgroundColor = .systemBackground
             textField.font = UIFont.systemFont(ofSize: 17)
-            textField.layer.cornerRadius = 10
+            textField.layer.cornerRadius = 25
             textField.clipsToBounds = true
             
-            // Add padding
-            let padding: CGFloat = 16
-            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: padding, height: textField.frame.height))
-            textField.leftView = paddingView
+            // Add magnifying glass icon on the left
+            let searchIcon = UIImageView(image: UIImage(systemName: "magnifyingglass"))
+            searchIcon.tintColor = UIColor.systemGray
+            searchIcon.contentMode = .scaleAspectFit
+            searchIcon.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
+            
+            let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
+            leftPaddingView.addSubview(searchIcon)
+            searchIcon.center = leftPaddingView.center
+            
+            textField.leftView = leftPaddingView
             textField.leftViewMode = .always
-            textField.rightView = paddingView
+            
+            // Add right padding
+            let rightPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
+            textField.rightView = rightPaddingView
             textField.rightViewMode = .always
         }
 

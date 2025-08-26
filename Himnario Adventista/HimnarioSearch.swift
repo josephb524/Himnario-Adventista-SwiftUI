@@ -27,7 +27,7 @@ struct HimnarioSearch {
                             normalizedHimno.contains(processedQuery)
             
             // Check numeric prefix match
-            let idMatch = String(himno.id).starts(with: query)
+            let idMatch = String(himno.numericId).starts(with: query)
             
             return textMatch || idMatch
         }
