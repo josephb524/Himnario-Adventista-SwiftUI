@@ -37,11 +37,11 @@ final class AudioPlayerManager {
         guard let player = audioPlayer else { return }
         if player.timeControlStatus == .playing {
             player.pause()
-            ProgressBarTimer.instance.stopTimer()
+            ProgressBarTimer.instance.stopObserving()
         } else {
             configureAudioSession()
             player.play()
-            ProgressBarTimer.instance.startTimer()
+            ProgressBarTimer.instance.startObserving()
         }
         coritoRate = player.rate
         updateNowPlayingInfo()
@@ -52,7 +52,7 @@ final class AudioPlayerManager {
         configureAudioSession()
         player.play()
         coritoRate = player.rate
-        ProgressBarTimer.instance.startTimer()
+        ProgressBarTimer.instance.startObserving()
         updateNowPlayingInfo()
     }
     
@@ -60,8 +60,8 @@ final class AudioPlayerManager {
         audioPlayer?.pause()
         audioPlayer?.seek(to: .zero)
         coritoRate = 0.0
-        ProgressBarTimer.instance.stopTimer()
-        ProgressBarTimer.instance.resetProgress()
+        ProgressBarTimer.instance.stopObserving()
+        ProgressBarTimer.instance.reset()
         clearNowPlayingInfo()
         //AudioBrain.instance.trackTime = ""
     }

@@ -212,6 +212,7 @@ struct AudioControlView: View {
                                     .foregroundColor(Colors.shared.getCurrentAccentColor())
                                     .transition(.scale.combined(with: .opacity))
                             }
+
                         }
                     }
                     .shadow(color: Color.black.opacity(0.16), radius: 10, x: 0, y: 6)
