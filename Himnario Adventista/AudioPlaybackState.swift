@@ -14,4 +14,5 @@ class AudioPlaybackState: ObservableObject {
     @Published var isPlaying: Bool = false
     @Published var isVocal: Bool = true
     @Published var numericId: Int = 0
+    @Published var himnoVersion: String = ""
 }

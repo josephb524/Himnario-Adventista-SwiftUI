@@ -19,6 +19,11 @@ struct AudioControlView: View {
     // Default to expanded view
     @State private var isExpanded: Bool = true
     
+    // Computed property to check if pista is available
+    private var isPistaAvailable: Bool {
+        return !himno.pistaID.isEmpty && himno.himnarioVersion != "Antiguo"
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Always visible compact header
@@ -244,12 +249,12 @@ struct AudioControlView: View {
                         .font(.subheadline)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(Color.white)
-                        .foregroundColor(Colors.shared.getCurrentAccentColor())
+                        .background(isPistaAvailable ? Color.white : Color.white.opacity(0.5))
+                        .foregroundColor(isPistaAvailable ? Colors.shared.getCurrentAccentColor() : Colors.shared.getCurrentAccentColor().opacity(0.4))
                         .clipShape(Capsule())
-                        .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
+                        .shadow(color: Color.black.opacity(isPistaAvailable ? 0.08 : 0.04), radius: 4, x: 0, y: 2)
                     }
-                    .disabled(AudioBrain.instance.isLoading || himno.himnarioVersion == "Antiguo")
+                    .disabled(AudioBrain.instance.isLoading || !isPistaAvailable)
                 }
             }
             .padding(.horizontal, 4)
@@ -288,12 +293,13 @@ struct AudioControlView: View {
     private func startNewSong() {
         playbackState.himnoTitle = himno.title
         playbackState.numericId = himno.numericId
+        playbackState.himnoVersion = himno.himnarioVersion
         AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
                                              indexC: (himno.numericId - 1),
                                              isVocal: playbackState.isVocal)
         
         AudioPlayerManager.shared.stop()
-        AudioBrain.instance.getTrack(by: playbackState.isVocal ? himno.himnoID : himno.pistaID, title: himno.title) {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal || playbackState.himnoVersion == "Antiguo" || himno.pistaID.isEmpty ? himno.himnoID : himno.pistaID, title: himno.title) {
             DispatchQueue.main.async {
                 playbackState.progress = 0
                 AudioPlayerManager.shared.play()
