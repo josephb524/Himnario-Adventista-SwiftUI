@@ -10,6 +10,10 @@ import Foundation
 import AVFoundation
 import Combine
 
+protocol PlaybackCompletionDelegate: AnyObject {
+    func trackDidComplete()
+}
+
 class ProgressBarTimer: ObservableObject {
     static let instance = ProgressBarTimer()
     
@@ -21,12 +25,17 @@ class ProgressBarTimer: ObservableObject {
     @Published var formattedRemainingTime: String = "0:00"
     @Published var isDragging: Bool = false
     
+    // MARK: - Delegate
+    weak var playbackCompletionDelegate: PlaybackCompletionDelegate?
+    
     // MARK: - Private Properties
     private var timeObserver: Any?
+    private weak var observedPlayer: AVPlayer?
     private var player: AVPlayer? {
         return AudioPlayerManager.shared.audioPlayer
     }
     private var cancellables = Set<AnyCancellable>()
+    private var hasTriggeredCompletionForCurrentItem = false
     
     private init() {
         setupNotifications()
@@ -48,9 +57,23 @@ class ProgressBarTimer: ObservableObject {
         // High-frequency updates for smooth progress (60fps)
         let interval = CMTime(seconds: 1.0/60.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         
+        // Store reference to the player that will have the observer
+        self.observedPlayer = player
+        
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self, !self.isDragging else { return }
             self.updateProgress(with: time)
+            
+            // Fallback: if near end and in playlist context, trigger completion once
+            if self.duration > 0,
+               self.progress >= 0.995,
+               AudioPlayerManager.shared.playbackContext == .playlist,
+               !self.hasTriggeredCompletionForCurrentItem {
+                self.hasTriggeredCompletionForCurrentItem = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.playbackCompletionDelegate?.trackDidComplete()
+                }
+            }
         }
         
         // Observe duration changes
@@ -118,8 +141,10 @@ class ProgressBarTimer: ObservableObject {
     
     private func removeTimeObserver() {
         if let timeObserver = timeObserver {
-            player?.removeTimeObserver(timeObserver)
+            // Remove from the same player instance that registered it
+            observedPlayer?.removeTimeObserver(timeObserver)
             self.timeObserver = nil
+            self.observedPlayer = nil
         }
     }
     
@@ -146,6 +171,9 @@ class ProgressBarTimer: ObservableObject {
     private func observeDurationChanges() {
         guard let player = player,
               let currentItem = player.currentItem else { return }
+        
+        // Reset completion flag when a new item starts
+        hasTriggeredCompletionForCurrentItem = false
         
         // Observe duration using KVO
         currentItem.publisher(for: \.duration)
@@ -198,9 +226,20 @@ class ProgressBarTimer: ObservableObject {
             self.formattedRemainingTime = "-0:00"
         }
         
-        // Auto-stop after completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            AudioPlayerManager.shared.stop()
+        // Check playback context to determine behavior
+        let playbackContext = AudioPlayerManager.shared.playbackContext
+        
+        switch playbackContext {
+        case .playlist:
+            // For playlist playback, notify delegate for auto-advance
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.playbackCompletionDelegate?.trackDidComplete()
+            }
+        case .individual:
+            // For individual hymn playback, just stop
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                AudioPlayerManager.shared.stop()
+            }
         }
     }
     

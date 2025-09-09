@@ -291,6 +291,12 @@ struct AudioControlView: View {
     }
     
     private func startNewSong() {
+        // Set playback context to individual for single hymn playback
+        AudioPlayerManager.shared.setPlaybackContext(.individual)
+        
+        // Clear playlist delegate for individual playback
+        ProgressBarTimer.instance.playbackCompletionDelegate = nil
+        
         playbackState.himnoTitle = himno.title
         playbackState.numericId = himno.numericId
         playbackState.himnoVersion = himno.himnarioVersion

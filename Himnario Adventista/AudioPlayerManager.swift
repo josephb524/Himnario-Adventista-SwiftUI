@@ -10,6 +10,11 @@ import AVFoundation
 import SwiftUI
 import MediaPlayer
 
+enum PlaybackContext {
+    case individual  // Single hymn from HimnoDetailView
+    case playlist    // From playlist playback
+}
+
 final class AudioPlayerManager {
     static let shared = AudioPlayerManager()
     
@@ -18,12 +23,16 @@ final class AudioPlayerManager {
     private(set) var coritoRate: Float = 0.0
     var trackDuration: Int = 0
     var currentTrackTitle: String = ""
+    var playbackContext: PlaybackContext = .individual
     
     private init() {
         setupRemoteTransportControls()
     }
     
     func loadTrack(from url: URL, duration: Int? = nil, title: String = "") {
+        // Stop observing old player before swap
+        ProgressBarTimer.instance.stopObserving()
+        
         audioPlayer = AVPlayer(url: url)
         audioPlayer?.automaticallyWaitsToMinimizeStalling = false
         currentTrackTitle = title
@@ -68,6 +77,10 @@ final class AudioPlayerManager {
     
     func getAudioPlayer() -> AVPlayer? {
         return audioPlayer
+    }
+    
+    func setPlaybackContext(_ context: PlaybackContext) {
+        playbackContext = context
     }
     
     private func configureAudioSession() {

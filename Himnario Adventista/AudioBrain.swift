@@ -15,11 +15,12 @@ class AudioBrain {
     //let playlistService = PlaylistService()
     let hostService = AudiusHostService()
     
-    var isLoading: Bool = false
+    @Published var trackTime: String = "00:00"
+    @Published var isLoading: Bool = false
     
-    var trackId: String = ""
-    var trackDuration: Int = 0
-    var trackTime: String = ""
+    private var currentTask: URLSessionDataTask?
+    private var trackId: String = ""
+    private var trackDuration: Int = 0
     
     var coritoFavorito: String = ""
     var isVoice: Bool = false
@@ -39,6 +40,9 @@ class AudioBrain {
      and loads the track into the AudioPlayerManager.
      */
     func getTrack(by trackId: String, title: String = "", completion: @escaping () -> Void) {
+        // Cancel any existing request
+        currentTask?.cancel()
+        
         isLoading = true
         
         self.trackId = trackId
@@ -55,7 +59,12 @@ class AudioBrain {
                 return
             }
             
-            URLSession.shared.dataTask(with: url) { data, _, error in
+            self.currentTask = URLSession.shared.dataTask(with: url) { data, _, error in
+                // Check if task was cancelled
+                if let error = error as NSError?, error.code == NSURLErrorCancelled {
+                    return
+                }
+                
                 guard error == nil,
                       let data = data,
                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -68,7 +77,7 @@ class AudioBrain {
                 
                 self.trackDuration = duration
                 self.trackTime = self.formatTrackTime(seconds: duration)
-                
+                "\(host)/v1/tracks/\(trackId)?app_name=CoritosAdventistas"
                 let streamURLString = "\(host)/v1/tracks/\(trackId)/stream?app_name=CoritosAdventistas"
                 guard let streamURL = URL(string: streamURLString) else {
                     debugPrint("Invalid stream URL")
@@ -78,7 +87,8 @@ class AudioBrain {
                 
                 AudioPlayerManager.shared.loadTrack(from: streamURL, duration: duration, title: title)
                 self.cleanupAndComplete(completion: completion)
-            }.resume()
+            }
+            self.currentTask?.resume()
         }
 //        playlistService.findPlaylistURL(coritoFavorito: coritoFavorito,
 //                                        isVoice: isVoice,
@@ -145,6 +155,7 @@ class AudioBrain {
     
     private func cleanupAndComplete(completion: @escaping () -> Void) {
         DispatchQueue.main.async {
+            self.currentTask = nil
             self.isLoading = false
             completion()
         }

@@ -68,7 +68,16 @@ struct ContentView: View {
                     .environmentObject(favoritesManager)
                     .environmentObject(playbackState)
 
-                // Third Tab: Settings.
+                // Third Tab: Playlists
+                PlaylistsView()
+                    .tabItem {
+                        Label("Playlists", systemImage: "text.badge.plus")
+                    }
+                    .environmentObject(favoritesManager)
+                    .environmentObject(playbackState)
+                    .environmentObject(settings)
+
+                // Fourth Tab: Settings.
                 NavigationView {
                     SettingsView()
                         .navigationTitle("Configuraciónes")

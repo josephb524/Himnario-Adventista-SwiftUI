@@ -37,6 +37,8 @@ class FavoritesManager: ObservableObject {
     private func saveFavorites() {
         if let data = try? JSONEncoder().encode(favoriteHimnos) {
             UserDefaults.standard.set(data, forKey: "favoriteHimnos")
+            // Notify PlaylistManager that favorites have changed
+            NotificationCenter.default.post(name: NSNotification.Name("FavoritesChanged"), object: nil)
         }
     }
     

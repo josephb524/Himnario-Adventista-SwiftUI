@@ -104,6 +104,8 @@ struct HimnoDetailView: View {
         .onAppear {
             // Track hymn view for review prompt
             reviewManager.trackHymnoViewed()
+            // Fire Audius no-op requests (host + track) without affecting playback
+            NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
         }
 //        .onAppear {
 //            
@@ -114,7 +116,9 @@ struct HimnoDetailView: View {
 //            }
 //        }
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
-            playbackState.isPlaying = false
+            DispatchQueue.main.async {
+                playbackState.isPlaying = false
+            }
         }
     }
                                 
