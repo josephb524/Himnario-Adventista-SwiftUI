@@ -86,6 +86,7 @@ struct PlaylistsView: View {
                     .environmentObject(playlistAudioState)
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     // Helper functions for system playlist icons and colors

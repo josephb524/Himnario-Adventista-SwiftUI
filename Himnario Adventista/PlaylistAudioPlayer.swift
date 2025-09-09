@@ -436,11 +436,15 @@ struct PlaylistNowPlayingView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button("Add to Playlist", action: {})
-                        Button("Share", action: {})
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    if let playlist = audioState.currentPlaylist, !playlist.isSystemPlaylist {
+                        Menu {
+                            Button("Add to Playlist", action: {})
+                            Button("Share", action: {})
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                        }
+                    } else {
+                        EmptyView()
                     }
                 }
             }

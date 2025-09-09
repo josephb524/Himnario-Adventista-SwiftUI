@@ -168,6 +168,8 @@ struct PlaylistDetailView: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                } else {
+                    EmptyView()
                 }
             }
         }
