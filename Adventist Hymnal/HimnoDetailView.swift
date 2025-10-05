@@ -23,15 +23,15 @@ struct HimnoDetailView: View {
         VStack {
             // Main text display.
             HStack {
-                Text(himno.himnarioVersion)
-                    .font(.subheadline)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        Capsule()
-                            .fill(himno.himnarioVersion == "Nuevo" ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
-                    )
-                    .foregroundColor(himno.himnarioVersion == "Nuevo" ? .blue : .orange)
+//                Text(himno.himnarioVersion)
+//                    .font(.subheadline)
+//                    .padding(.horizontal, 12)
+//                    .padding(.vertical, 6)
+//                    .background(
+//                        Capsule()
+//                            .fill(himno.himnarioVersion == "1985" ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
+//                    )
+//                    .foregroundColor(himno.himnarioVersion == "1985" ? .blue : .orange)
                 
                 if favoritesManager.isFavorite(id: himno.numericId, himnarioVersion: himno.himnarioVersion) {
                     HStack(spacing: 4) {
@@ -87,10 +87,10 @@ struct HimnoDetailView: View {
             }
             
             // Instead of inline audio controls, we embed the global AudioControlView.
-            AudioControlView(himno: himno)
-                .environmentObject(playbackState)
-                .environmentObject(favoritesManager)
-                .environmentObject(settings)
+//            AudioControlView(himno: himno)
+//                .environmentObject(playbackState)
+//                .environmentObject(favoritesManager)
+//                .environmentObject(settings)
             
             
             Spacer()
@@ -148,7 +148,7 @@ struct HimnoDetailView: View {
     func loadAudio() {
         playbackState.himnoTitle = himno.title
         
-        AudioBrain.instance.getTrack(by: playbackState.isVocal || playbackState.himnoVersion == "Antiguo" || himno.pistaID.isEmpty ? himno.himnoID : himno.pistaID, title: himno.title) {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal || himno.pistaID.isEmpty ? himno.himnoID : himno.pistaID, title: himno.title) {
             DispatchQueue.main.async {
                 print("Track loaded")
             }
@@ -163,7 +163,7 @@ struct HimnoDetailView: View {
 }
 
 #Preview {
-    let himno: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+    let himno: [Himnario] = Bundle.main.decode("adventistHymnal.json")
     HimnoDetailView(himno: himno[3])
         .environmentObject(AudioPlaybackState())
         .environmentObject(FavoritesManager())

@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  Concordancia Biblica
+//  Adventist Hymnal
 //
 //  Created by Jose Pimentel on 6/22/24.
 //
@@ -17,30 +17,30 @@ struct SettingsView: View {
     var body: some View {
         
         Form {
-            Section(header: Text("Apariencia")) {
+            Section(header: Text("Appearance")) {
                 Toggle(isOn: $settings.isDarkMode) {
-                    Text("Modo Oscuro")
+                    Text("Dark Mode")
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Tamaño de Letra: \(Int(settings.fontSize))")
+                    Text("Font Size: \(Int(settings.fontSize))")
                     Slider(value: $settings.fontSize, in: 20...40, step: 1)
                 }
                 .padding(.vertical, 5)
                 
                 NavigationLink(destination: NavigationBarThemeView()) {
-                    Text("Cambiar Color")
+                    Text("Change Color")
                 }
             }
             
-            Section(header: Text("Opinión y Comentarios")) {
+            Section(header: Text("Feedback")) {
                 Button(action: {
                     reviewManager.showCustomReviewPrompt()
                 }) {
                     HStack {
                         Image(systemName: "star.circle.fill")
                             .foregroundColor(.yellow)
-                        Text("Calificar App")
+                        Text("Rate App")
                         Spacer()
                         Image(systemName: "chevron.right")
                             .foregroundColor(.gray)

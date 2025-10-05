@@ -37,22 +37,17 @@ final class PlaylistService {
         var p3 = ""
         var p4 = ""
         
-        if coritoFavorito == "Antiguo" {
-            p1 = "lz3dl"
-            p2 = "RKd3X"
-            p3 = "qE3qE"
+        // Now we only have the 1985 hymnal version
+        if isVoice {
+            p1 = "ezPGw"
+            p2 = "L5oP1"
+            p3 = "DyYrZ"
+            p4 = "n1mw3"
         } else {
-            if isVoice {
-                p1 = "ezPGw"
-                p2 = "L5oP1"
-                p3 = "DyYrZ"
-                p4 = "n1mw3"
-            } else {
-                p1 = "oEgmv"
-                p2 = "ZZk3J"
-                p3 = "qE7ao"
-                p4 = "5QBMx"
-            }
+            p1 = "oEgmv"
+            p2 = "ZZk3J"
+            p3 = "qE7ao"
+            p4 = "5QBMx"
         }
         
         return (p1, p2, p3, p4)

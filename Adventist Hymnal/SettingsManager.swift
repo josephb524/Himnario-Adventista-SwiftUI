@@ -12,10 +12,15 @@ class SettingsManager: ObservableObject {
     
     @AppStorage("FontSizes") var fontSize: Double = 30.0
     @AppStorage("isDarkMode") var isDarkMode = false
-    @AppStorage("selectedNavigationTheme") var selectedNavigationTheme: String = NavigationBarTheme.defaultTheme.rawValue
+    @AppStorage("selectedNavigationTheme") var selectedNavigationTheme: String = NavigationBarTheme.midnight.rawValue
     
     // Review prompt state
     @Published var showReviewPrompt = false
     
-    private init() {}
+    private init() {
+        // Migrate users who still have the old default value stored
+        if selectedNavigationTheme == NavigationBarTheme.defaultTheme.rawValue {
+            selectedNavigationTheme = NavigationBarTheme.midnight.rawValue
+        }
+    }
 }

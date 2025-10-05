@@ -1,6 +1,6 @@
 //
 //  NavigationBarThemeView.swift
-//  Himnario Adventista SwiftUI
+//  Adventist Hymnal SwiftUI
 //
 //  Created by Jose Pimentel on 3/20/25.
 //
@@ -13,7 +13,7 @@ struct NavigationBarThemeView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Selecciona el Tema de la Barra de Navegación")) {
+            Section(header: Text("Select Navigation Bar Theme")) {
                 LazyVGrid(columns: [
                     GridItem(.flexible()),
                     GridItem(.flexible())
@@ -32,7 +32,7 @@ struct NavigationBarThemeView: View {
         }
         .navigationBarItems(leading: backButton)
         .navigationBarBackButtonHidden(true)
-        .navigationTitle("Tema de Navegación")
+        .navigationTitle("Navigation Theme")
         .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }

@@ -12,37 +12,37 @@
 			containerPortal = BB9EA1A12D6EB7DF00D2E201 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BB9EA1A82D6EB7DF00D2E201;
-			remoteInfo = "Himnario Adventista SwiftUI";
+			remoteInfo = "Adventist Hymnal SwiftUI";
 		};
 		BB9EA1C42D6EB7E400D2E201 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BB9EA1A12D6EB7DF00D2E201 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BB9EA1A82D6EB7DF00D2E201;
-			remoteInfo = "Himnario Adventista SwiftUI";
+			remoteInfo = "Adventist Hymnal SwiftUI";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Himnario Adventista.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB9EA1B92D6EB7E400D2E201 /* Himnario Adventista SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Himnario Adventista SwiftUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB9EA1C32D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Himnario Adventista SwiftUIUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9EA1A92D6EB7DF00D2E201 /* Adventist Hymnal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Adventist Hymnal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9EA1B92D6EB7E400D2E201 /* Adventist Hymnal SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Adventist Hymnal SwiftUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9EA1C32D6EB7E400D2E201 /* Adventist Hymnal SwiftUIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Adventist Hymnal SwiftUIUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BB9EA1AB2D6EB7DF00D2E201 /* Himnario Adventista */ = {
+		BB9EA1AB2D6EB7DF00D2E201 /* Adventist Hymnal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Himnario Adventista";
+			path = "Adventist Hymnal";
 			sourceTree = "<group>";
 		};
-		BB9EA1BC2D6EB7E400D2E201 /* Himnario Adventista Tests */ = {
+		BB9EA1BC2D6EB7E400D2E201 /* Adventist Hymnal Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Himnario Adventista Tests";
+			path = "Adventist Hymnal Tests";
 			sourceTree = "<group>";
 		};
-		BB9EA1C62D6EB7E400D2E201 /* Himnario Adventista UITests */ = {
+		BB9EA1C62D6EB7E400D2E201 /* Adventist Hymnal UITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Himnario Adventista UITests";
+			path = "Adventist Hymnal UITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		BB9EA1A02D6EB7DF00D2E201 = {
 			isa = PBXGroup;
 			children = (
-				BB9EA1AB2D6EB7DF00D2E201 /* Himnario Adventista */,
-				BB9EA1BC2D6EB7E400D2E201 /* Himnario Adventista Tests */,
-				BB9EA1C62D6EB7E400D2E201 /* Himnario Adventista UITests */,
+				BB9EA1AB2D6EB7DF00D2E201 /* Adventist Hymnal */,
+				BB9EA1BC2D6EB7E400D2E201 /* Adventist Hymnal Tests */,
+				BB9EA1C62D6EB7E400D2E201 /* Adventist Hymnal UITests */,
 				BB9EA1AA2D6EB7DF00D2E201 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +85,9 @@
 		BB9EA1AA2D6EB7DF00D2E201 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */,
-				BB9EA1B92D6EB7E400D2E201 /* Himnario Adventista SwiftUITests.xctest */,
-				BB9EA1C32D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests.xctest */,
+				BB9EA1A92D6EB7DF00D2E201 /* Adventist Hymnal.app */,
+				BB9EA1B92D6EB7E400D2E201 /* Adventist Hymnal SwiftUITests.xctest */,
+				BB9EA1C32D6EB7E400D2E201 /* Adventist Hymnal SwiftUIUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */ = {
+		BB9EA1A82D6EB7DF00D2E201 /* Adventist Hymnal */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista" */;
+			buildConfigurationList = BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal" */;
 			buildPhases = (
 				BB9EA1A52D6EB7DF00D2E201 /* Sources */,
 				BB9EA1A62D6EB7DF00D2E201 /* Frameworks */,
@@ -108,18 +108,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				BB9EA1AB2D6EB7DF00D2E201 /* Himnario Adventista */,
+				BB9EA1AB2D6EB7DF00D2E201 /* Adventist Hymnal */,
 			);
-			name = "Himnario Adventista";
+			name = "Adventist Hymnal";
 			packageProductDependencies = (
 			);
-			productName = "Himnario Adventista SwiftUI";
-			productReference = BB9EA1A92D6EB7DF00D2E201 /* Himnario Adventista.app */;
+			productName = "Adventist Hymnal SwiftUI";
+			productReference = BB9EA1A92D6EB7DF00D2E201 /* Adventist Hymnal.app */;
 			productType = "com.apple.product-type.application";
 		};
-		BB9EA1B82D6EB7E400D2E201 /* Himnario Adventista SwiftUITests */ = {
+		BB9EA1B82D6EB7E400D2E201 /* Adventist Hymnal SwiftUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB9EA1D02D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUITests" */;
+			buildConfigurationList = BB9EA1D02D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal SwiftUITests" */;
 			buildPhases = (
 				BB9EA1B52D6EB7E400D2E201 /* Sources */,
 				BB9EA1B62D6EB7E400D2E201 /* Frameworks */,
@@ -131,18 +131,18 @@
 				BB9EA1BB2D6EB7E400D2E201 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				BB9EA1BC2D6EB7E400D2E201 /* Himnario Adventista Tests */,
+				BB9EA1BC2D6EB7E400D2E201 /* Adventist Hymnal Tests */,
 			);
-			name = "Himnario Adventista SwiftUITests";
+			name = "Adventist Hymnal SwiftUITests";
 			packageProductDependencies = (
 			);
-			productName = "Himnario Adventista SwiftUITests";
-			productReference = BB9EA1B92D6EB7E400D2E201 /* Himnario Adventista SwiftUITests.xctest */;
+			productName = "Adventist Hymnal SwiftUITests";
+			productReference = BB9EA1B92D6EB7E400D2E201 /* Adventist Hymnal SwiftUITests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		BB9EA1C22D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests */ = {
+		BB9EA1C22D6EB7E400D2E201 /* Adventist Hymnal SwiftUIUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB9EA1D32D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUIUITests" */;
+			buildConfigurationList = BB9EA1D32D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal SwiftUIUITests" */;
 			buildPhases = (
 				BB9EA1BF2D6EB7E400D2E201 /* Sources */,
 				BB9EA1C02D6EB7E400D2E201 /* Frameworks */,
@@ -154,13 +154,13 @@
 				BB9EA1C52D6EB7E400D2E201 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				BB9EA1C62D6EB7E400D2E201 /* Himnario Adventista UITests */,
+				BB9EA1C62D6EB7E400D2E201 /* Adventist Hymnal UITests */,
 			);
-			name = "Himnario Adventista SwiftUIUITests";
+			name = "Adventist Hymnal SwiftUIUITests";
 			packageProductDependencies = (
 			);
-			productName = "Himnario Adventista SwiftUIUITests";
-			productReference = BB9EA1C32D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests.xctest */;
+			productName = "Adventist Hymnal SwiftUIUITests";
+			productReference = BB9EA1C32D6EB7E400D2E201 /* Adventist Hymnal SwiftUIUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista" */;
+			buildConfigurationList = BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Adventist Hymnal" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */,
-				BB9EA1B82D6EB7E400D2E201 /* Himnario Adventista SwiftUITests */,
-				BB9EA1C22D6EB7E400D2E201 /* Himnario Adventista SwiftUIUITests */,
+				BB9EA1A82D6EB7DF00D2E201 /* Adventist Hymnal */,
+				BB9EA1B82D6EB7E400D2E201 /* Adventist Hymnal SwiftUITests */,
+				BB9EA1C22D6EB7E400D2E201 /* Adventist Hymnal SwiftUIUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		BB9EA1BB2D6EB7E400D2E201 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */;
+			target = BB9EA1A82D6EB7DF00D2E201 /* Adventist Hymnal */;
 			targetProxy = BB9EA1BA2D6EB7E400D2E201 /* PBXContainerItemProxy */;
 		};
 		BB9EA1C52D6EB7E400D2E201 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BB9EA1A82D6EB7DF00D2E201 /* Himnario Adventista */;
+			target = BB9EA1A82D6EB7DF00D2E201 /* Adventist Hymnal */;
 			targetProxy = BB9EA1C42D6EB7E400D2E201 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -397,12 +397,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Adventist Hymnal/Preview Content\"";
 				DEVELOPMENT_TEAM = 57R4ZFVKDM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Himnario-Adventista-SwiftUI-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_FILE = "Adventist-Hymnal-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Adventist Hymnal";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -432,12 +432,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Himnario Adventista/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Adventist Hymnal/Preview Content\"";
 				DEVELOPMENT_TEAM = 57R4ZFVKDM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Himnario-Adventista-SwiftUI-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_FILE = "Adventist-Hymnal-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Adventist Hymnal";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -473,7 +473,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Himnario Adventista SwiftUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Himnario Adventista SwiftUI";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Adventist Hymnal SwiftUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Adventist Hymnal SwiftUI";
 			};
 			name = Debug;
 		};
@@ -492,7 +492,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Himnario Adventista SwiftUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Himnario Adventista SwiftUI";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Adventist Hymnal SwiftUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Adventist Hymnal SwiftUI";
 			};
 			name = Release;
 		};
@@ -509,7 +509,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Himnario Adventista SwiftUI";
+				TEST_TARGET_NAME = "Adventist Hymnal SwiftUI";
 			};
 			name = Debug;
 		};
@@ -526,14 +526,14 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Himnario Adventista SwiftUI";
+				TEST_TARGET_NAME = "Adventist Hymnal SwiftUI";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Himnario Adventista" */ = {
+		BB9EA1A42D6EB7DF00D2E201 /* Build configuration list for PBXProject "Adventist Hymnal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1CB2D6EB7E400D2E201 /* Debug */,
@@ -542,7 +542,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista" */ = {
+		BB9EA1CD2D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1CE2D6EB7E400D2E201 /* Debug */,
@@ -551,7 +551,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB9EA1D02D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUITests" */ = {
+		BB9EA1D02D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal SwiftUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1D12D6EB7E400D2E201 /* Debug */,
@@ -560,7 +560,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB9EA1D32D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Himnario Adventista SwiftUIUITests" */ = {
+		BB9EA1D32D6EB7E400D2E201 /* Build configuration list for PBXNativeTarget "Adventist Hymnal SwiftUIUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB9EA1D42D6EB7E400D2E201 /* Debug */,

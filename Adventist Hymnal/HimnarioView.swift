@@ -1,6 +1,6 @@
 //
-//  HimnarioNuevo.swift
-//  Himnario Adventista SwiftUI
+//  HimnarioView.swift
+//  Adventist Hymnal SwiftUI
 //
 //  Created by Jose Pimentel on 2/26/25.
 //
@@ -34,7 +34,7 @@ struct HimnarioView: View {
                 if isSearching {
                     // If the search results are empty, show a placeholder message
                     if himnoSearchResult.isEmpty {
-                        Text("No se encontraron himnos")
+                        Text("No hymns found")
                             .foregroundColor(.gray)
                     } else {
                         // Otherwise, show the search results
@@ -73,15 +73,15 @@ struct HimnarioView: View {
             }
             .padding(2)
         }
-        .navigationTitle("Himnario \(himnos.first?.himnarioVersion ?? "")")
+        .navigationTitle("SDA Hymnal")
     }
 }
 
 #Preview {
     let favoritesManager = FavoritesManager()
     let playbackState = AudioPlaybackState()
-    let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-    HimnarioView(himnos: himnarioNuevo)
+    let adventistHymnal: [Himnario] = Bundle.main.decode("adventistHymnal.json")
+    HimnarioView(himnos: adventistHymnal)
         .environmentObject(favoritesManager)
         .environmentObject(playbackState)
 }

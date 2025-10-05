@@ -90,19 +90,19 @@ struct PlaylistDetailView: View {
                             .font(.system(size: 40))
                             .foregroundColor(.secondary)
                         
-                        Text("No hay canciones")
+                        Text("No songs")
                             .font(.headline)
                             .foregroundColor(.primary)
                         
                         Text(currentPlaylist.isSystemPlaylist ? 
-                             "Esta playlist del sistema está vacía" : 
-                             "Agrega himnos a tu playlist para comenzar a escuchar")
+                             "This system playlist is empty" : 
+                             "Add hymns to your playlist to start listening")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         
                         if !currentPlaylist.isSystemPlaylist {
-                            Button("Añadir Canciones") {
+                            Button("Add Songs") {
                                 showingAddSongs = true
                             }
                             .buttonStyle(.borderedProminent)
@@ -132,7 +132,7 @@ struct PlaylistDetailView: View {
             } header: {
                 if !currentPlaylist.items.isEmpty {
                     HStack {
-                        Text("\(currentPlaylist.items.count) canciones")
+                        Text("\(currentPlaylist.items.count) songs")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Spacer()
@@ -151,17 +151,17 @@ struct PlaylistDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if !currentPlaylist.isSystemPlaylist {
                     Menu {
-                        Button("Añadir Canciones") {
+                        Button("Add Songs") {
                             showingAddSongs = true
                         }
                         
-                        Button("Editar Playlist") {
+                        Button("Edit Playlist") {
                             showingEditPlaylist = true
                         }
                         
                         Divider()
                         
-                        Button("Eliminar Playlist", role: .destructive) {
+                        Button("Delete Playlist", role: .destructive) {
                             // TODO: Add confirmation dialog
                             playlistManager.deletePlaylist(playlist: currentPlaylist)
                         }
@@ -216,9 +216,9 @@ struct PlaylistHeaderView: View {
     private var playlistIcon: String {
         if playlist.isSystemPlaylist {
             switch playlist.name {
-            case "Himnario Nuevo":
+            case "Seventh-day Adventist Hymnal 1985":
                 return "book.fill"
-            case "Himnario Antiguo":
+            case "Seventh-day Adventist Hymnal 1985":
                 return "book.closed.fill"
             case "Favoritos":
                 return "heart.fill"
@@ -233,9 +233,9 @@ struct PlaylistHeaderView: View {
     private var playlistColor: Color {
         if playlist.isSystemPlaylist {
             switch playlist.name {
-            case "Himnario Nuevo":
+            case "Seventh-day Adventist Hymnal 1985":
                 return .blue
-            case "Himnario Antiguo":
+            case "Seventh-day Adventist Hymnal 1985":
                 return .brown
             case "Favoritos":
                 return .red
@@ -274,7 +274,7 @@ struct PlaylistHeaderView: View {
                         .multilineTextAlignment(.center)
                 }
                 
-                Text("\(playlist.songCount) canciones")
+                Text("\(playlist.songCount) songs")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -408,17 +408,17 @@ struct EditPlaylistView: View {
                 Spacer()
             }
             .padding(.top, 30)
-            .navigationTitle("Editar Playlist")
+            .navigationTitle("Edit Playlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancelar") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Guardar") {
+                    Button("Save") {
                         saveChanges()
                     }
                     .disabled(playlistName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

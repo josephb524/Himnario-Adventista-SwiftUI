@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Himnario Adventista SwiftUI
+//  Adventist Hymnal SwiftUI
 //
 //  Created by Jose Pimentel on 2/25/25.
 //
@@ -16,11 +16,7 @@ struct ContentView: View {
     // Persist font size (if needed globally)
 //    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
-    let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-    let himnarioViejo: [Himnario] = Bundle.main.decode("himnarioViejo.json")
-    
-    @State private var selectedHimnario: String = "Himnario Nuevo"
-    let himnarios = ["Himnario Nuevo", "Himnario Antiguo"]
+    let adventistHymnal: [Himnario] = Bundle.main.decode("adventistHymnal.json")
     
     init() {
         setupTabBarAppearance()
@@ -31,60 +27,47 @@ struct ContentView: View {
             Color(.systemBackground)
                 .ignoresSafeArea(.all)
             TabView {
-                // First Tab: Himnario List with segmented Picker.
+                // First Tab: Hymnal List
                 NavigationView {
-                    VStack {
-                        Picker("Selecciona el Himnario", selection: $selectedHimnario) {
-                            ForEach(himnarios, id: \.self) { item in
-                                Text(item)
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding()
-                        
-                        HimnarioView(himnos: selectedHimnario == "Himnario Nuevo" ? himnarioNuevo : himnarioViejo)
-                            .id(selectedHimnario)
-                    }
-                    .navigationTitle("Himnario")
-                    .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
-                    .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .tabBar)
-                    .toolbarBackground(.visible, for: .navigationBar)
+                    HimnarioView(himnos: adventistHymnal)
+                        .navigationTitle("SDA Hymnal")
+                        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
+                        .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .tabBar)
+                        .toolbarBackground(.visible, for: .navigationBar)
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
-                    Label("Himnario", systemImage: "music.note.list")
+                    Label("Hymnal", systemImage: "music.note.list")
                 }
                 .environmentObject(favoritesManager)
                 .environmentObject(playbackState)
 
-                // Second Tab: Favorites.
-
+                // Second Tab: Favorites
                 FavoriteView()
-                    .navigationTitle("Favoritos")
-
+                    .navigationTitle("Favorites")
                     .tabItem {
-                        Label("Favoritos", systemImage: "star")
+                        Label("Favorites", systemImage: "star")
                     }
                     .environmentObject(favoritesManager)
                     .environmentObject(playbackState)
 
                 // Third Tab: Playlists
-                PlaylistsView()
-                    .tabItem {
-                        Label("Playlists", systemImage: "text.badge.plus")
-                    }
-                    .environmentObject(favoritesManager)
-                    .environmentObject(playbackState)
-                    .environmentObject(settings)
+//                PlaylistsView()
+//                    .tabItem {
+//                        Label("Playlists", systemImage: "text.badge.plus")
+//                    }
+//                    .environmentObject(favoritesManager)
+//                    .environmentObject(playbackState)
+//                    .environmentObject(settings)
 
-                // Fourth Tab: Settings.
+                // Fourth Tab: Settings
                 NavigationView {
                     SettingsView()
-                        .navigationTitle("Configuraciónes")
+                        .navigationTitle("Settings")
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
                 .tabItem {
-                    Label("Configuraciónes", systemImage: "gearshape")
+                    Label("Settings", systemImage: "gearshape")
                 }
             }
             .preferredColorScheme(settings.isDarkMode ? .dark : .light)

@@ -70,8 +70,7 @@ class PlaylistManager: ObservableObject {
     @Published var systemPlaylists: [Playlist] = []
     
     private let playlistsKey = "user_playlists"
-    private let himnarioNuevo: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
-    private let himnarioViejo: [Himnario] = Bundle.main.decode("himnarioViejo.json")
+    private let adventistHymnal: [Himnario] = Bundle.main.decode("adventistHymnal.json")
     
     private init() {
         loadPlaylists()
@@ -159,21 +158,16 @@ class PlaylistManager: ObservableObject {
     
     // MARK: - System Playlists
     private func createSystemPlaylists() {
-        // Create Himnario Nuevo playlist
-        var nuevoPlaylist = Playlist(name: "Himnario Nuevo", description: "Todos los himnos del himnario nuevo", isSystemPlaylist: true)
-        nuevoPlaylist.items = himnarioNuevo.map { PlaylistItem(from: $0) }
-            .sorted { $0.numericId < $1.numericId }
-        
-        // Create Himnario Antiguo playlist
-        var antiguoPlaylist = Playlist(name: "Himnario Antiguo", description: "Todos los himnos del himnario antiguo", isSystemPlaylist: true)
-        antiguoPlaylist.items = himnarioViejo.map { PlaylistItem(from: $0) }
+        // Create Adventist Hymnal 1985 playlist
+        var hymnalPlaylist = Playlist(name: "Seventh-day Adventist Hymnal 1985", description: "All hymns from the 1985 hymnal", isSystemPlaylist: true)
+        hymnalPlaylist.items = adventistHymnal.map { PlaylistItem(from: $0) }
             .sorted { $0.numericId < $1.numericId }
         
         // Create Favorites playlist (initially empty, will be populated by observer)
-        let favoritesPlaylist = Playlist(name: "Favoritos", description: "Tus himnos favoritos", isSystemPlaylist: true)
+        let favoritesPlaylist = Playlist(name: "Favorites", description: "Your favorite hymns", isSystemPlaylist: true)
         
         DispatchQueue.main.async {
-            self.systemPlaylists = [nuevoPlaylist, antiguoPlaylist, favoritesPlaylist]
+            self.systemPlaylists = [hymnalPlaylist, favoritesPlaylist]
             self.updateFavoritesPlaylist()
         }
     }
@@ -190,7 +184,7 @@ class PlaylistManager: ObservableObject {
     }
     
     private func updateFavoritesPlaylist() {
-        guard let favoritesIndex = systemPlaylists.firstIndex(where: { $0.name == "Favoritos" }) else { return }
+        guard let favoritesIndex = systemPlaylists.firstIndex(where: { $0.name == "Favorites" }) else { return }
         
         var favoritesPlaylist = systemPlaylists[favoritesIndex]
         

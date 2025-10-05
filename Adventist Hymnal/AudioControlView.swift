@@ -21,7 +21,7 @@ struct AudioControlView: View {
     
     // Computed property to check if pista is available
     private var isPistaAvailable: Bool {
-        return !himno.pistaID.isEmpty && himno.himnarioVersion != "Antiguo"
+        return !himno.pistaID.isEmpty
     }
     
     var body: some View {
@@ -305,7 +305,7 @@ struct AudioControlView: View {
                                              isVocal: playbackState.isVocal)
         
         AudioPlayerManager.shared.stop()
-        AudioBrain.instance.getTrack(by: playbackState.isVocal || playbackState.himnoVersion == "Antiguo" || himno.pistaID.isEmpty ? himno.himnoID : himno.pistaID, title: himno.title) {
+        AudioBrain.instance.getTrack(by: playbackState.isVocal || himno.pistaID.isEmpty ? himno.himnoID : himno.pistaID, title: himno.title) {
             DispatchQueue.main.async {
                 playbackState.progress = 0
                 AudioPlayerManager.shared.play()
@@ -316,7 +316,7 @@ struct AudioControlView: View {
 }
 
 #Preview {
-    let himno: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+    let himno: [Himnario] = Bundle.main.decode("adventistHymnal.json")
     AudioControlView(himno: himno[0])
         .environmentObject(AudioPlaybackState())
         .environmentObject(FavoritesManager())

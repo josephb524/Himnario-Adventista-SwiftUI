@@ -19,7 +19,7 @@ struct CreatePlaylistView: View {
                             Image(systemName: "music.note.list")
                                 .font(.system(size: 40))
                                 .foregroundColor(.secondary)
-                            Text("Nueva Playlist")
+                            Text("New Playlist")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -55,17 +55,17 @@ struct CreatePlaylistView: View {
                 Spacer()
             }
             .padding(.top, 30)
-            .navigationTitle("Nueva Playlist")
+            .navigationTitle("New Playlist")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancelar") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Crear") {
+                    Button("Create") {
                         createPlaylist()
                     }
                     .disabled(playlistName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

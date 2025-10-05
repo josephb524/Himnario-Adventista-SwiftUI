@@ -6,29 +6,19 @@ struct AddToPlaylistView: View {
     
     let targetPlaylist: Playlist
     
-    @State private var selectedHimnario = "Himnario Nuevo"
+    @State private var selectedHimnario = "Seventh-day Adventist Hymnal 1985"
     @State private var searchText = ""
     @State private var selectedSongs: Set<String> = []
     
-    private let himnarios = ["Himnario Nuevo", "Himnario Antiguo"]
-    
-    private var himnarioNuevo: [Himnario] {
-        Bundle.main.decode("himnarioNuevo.json")
-    }
-    
-    private var himnarioViejo: [Himnario] {
-        Bundle.main.decode("himnarioViejo.json")
-    }
-    
-    private var currentHimnos: [Himnario] {
-        selectedHimnario == "Himnario Nuevo" ? himnarioNuevo : himnarioViejo
+    private var adventistHymnal: [Himnario] {
+        Bundle.main.decode("adventistHymnal.json")
     }
     
     private var filteredHimnos: [Himnario] {
         if searchText.isEmpty {
-            return currentHimnos
+            return adventistHymnal
         } else {
-            return currentHimnos.filter { himno in
+            return adventistHymnal.filter { himno in
                 himno.title.localizedCaseInsensitiveContains(searchText) ||
                 "\(himno.numericId)".contains(searchText)
             }
@@ -44,21 +34,12 @@ struct AddToPlaylistView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Himnario selector
-                Picker("Selecciona el Himnario", selection: $selectedHimnario) {
-                    ForEach(himnarios, id: \.self) { item in
-                        Text(item)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
                 // Search bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
                     
-                    TextField("Buscar himnos...", text: $searchText)
+                    TextField("Search hymns...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
                 }
                 .padding(.horizontal, 12)
@@ -85,13 +66,13 @@ struct AddToPlaylistView: View {
                         Divider()
                         
                         HStack {
-                            Text("\(selectedSongs.count) canción\(selectedSongs.count == 1 ? "" : "es") seleccionada\(selectedSongs.count == 1 ? "" : "s")")
+                            Text("\(selectedSongs.count) song\(selectedSongs.count == 1 ? "" : "s") selected")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                             
                             Spacer()
                             
-                            Button("Añadir") {
+                            Button("Add") {
                                 addSelectedSongs()
                             }
                             .buttonStyle(.borderedProminent)
@@ -102,17 +83,17 @@ struct AddToPlaylistView: View {
                     }
                 }
             }
-            .navigationTitle("Añadir a \(targetPlaylist.name)")
+            .navigationTitle("Add to \(targetPlaylist.name)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancelar") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Añadir Todo") {
+                    Button("Add All") {
                         addAllVisibleSongs()
                     }
                     .disabled(availableHimnos.isEmpty)

@@ -8,35 +8,36 @@
 import SwiftUI
 
 enum NavigationBarTheme: String, CaseIterable, Identifiable {
-    case defaultTheme = "default"
+    // Order here controls display order in the grid
+    case midnight = "midnight"
     case sunset = "sunset"
     case ocean = "ocean"
     case forest = "forest"
     case pastel = "pastel"
-    case midnight = "midnight"
     case royal = "royal"
     case warmth = "warmth"
+    case defaultTheme = "default"
     
     var id: String { self.rawValue }
     
     var displayName: String {
         switch self {
         case .defaultTheme:
-            return "Predeterminado"
+            return "Blue-Purple-Cyan"
         case .sunset:
-            return "Atardecer"
+            return "Sunset"
         case .ocean:
-            return "Océano"
+            return "Ocean"
         case .forest:
-            return "Bosque"
+            return "Forest"
         case .royal:
-            return "Real"
+            return "Royal"
         case .warmth:
-            return "Calidez"
+            return "Warmth"
         case .pastel:
             return "Pastel"
         case .midnight:
-            return "Medianoche"
+            return "Default"
         }
     }
     

@@ -1,6 +1,6 @@
 //
 //  FavoriteView.swift
-//  Himnario Adventista SwiftUI
+//  Adventist Hymnal SwiftUI
 //
 //  Created by Jose Pimentel on 3/2/25.
 //
@@ -61,10 +61,10 @@ struct FavoriteView: View {
                                 Image(systemName: "star")
                                     .font(.largeTitle)
                                     .foregroundColor(.gray)
-                                Text("No hay favoritos aún")
+                                Text("No favorites yet")
                                     .font(.headline)
                                     .foregroundColor(.gray)
-                                Text("Agrega himnos a favoritos para verlos aquí")
+                                Text("Add hymns to favorites to see them here")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
                                     .multilineTextAlignment(.center)
@@ -91,7 +91,7 @@ struct FavoriteView: View {
                 }
                 .padding(2)
             }
-            .navigationTitle("Favoritos")
+            .navigationTitle("Favorites")
             .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
@@ -106,7 +106,7 @@ struct FavoriteView: View {
 }
 
 //#Preview {
-//    let sampleHimnos: [Himnario] = Bundle.main.decode("himnarioNuevo.json")
+//    let sampleHimnos: [Himnario] = Bundle.main.decode("adventistHymnal.json")
 //    let favoritesManager = FavoritesManager()
 //     @StateObject private var favoritesManager = FavoritesManager()
 //    NavigationView {

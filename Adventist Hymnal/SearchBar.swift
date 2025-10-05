@@ -55,7 +55,7 @@ struct SearchBar: UIViewRepresentable {
         let searchBar = UISearchBar(frame: .zero)
         context.coordinator.searchBarInstance = searchBar
         searchBar.delegate = context.coordinator
-        searchBar.placeholder = "Buscar Himno"
+        searchBar.placeholder = "Search Hymnal"
         
         // Modern styling - pill-shaped
         searchBar.searchBarStyle = .minimal

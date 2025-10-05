@@ -111,7 +111,7 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
         AudioPlayerManager.shared.setPlaybackContext(.playlist)
         
         // For now default to vocal track; fall back if unavailable
-        let trackId = (song.himnarioVersion == "Antiguo" || song.pistaID.isEmpty) ? song.himnoID : song.himnoID
+        let trackId = song.pistaID.isEmpty ? song.himnoID : song.himnoID
         AudioPlayerManager.shared.stop()
         
         // Add timeout to prevent getting stuck in loading state

@@ -17,13 +17,13 @@ struct PlaylistsView: View {
                 List {
                 Section {
                     Button(action: { showingCreatePlaylist = true }) {
-                        PlaylistRow(icon: "plus.circle.fill", title: "Crear nueva playlist")
+                        PlaylistRow(icon: "plus.circle.fill", title: "Create new playlist")
                     }
                     .foregroundColor(.primary)
                 }
                 
                 // System playlists section
-                Section(header: Text("Listas del sistema")) {
+                Section(header: Text("System playlists")) {
                     ForEach(playlistManager.systemPlaylists) { playlist in
                         NavigationLink(destination: PlaylistDetailView(playlist: playlist)
                             .environmentObject(playlistAudioState)
@@ -31,14 +31,14 @@ struct PlaylistsView: View {
                             PlaylistRow(
                                 icon: getSystemPlaylistIcon(for: playlist.name),
                                 title: playlist.name,
-                                subtitle: "\(playlist.songCount) canciones",
+                                subtitle: "\(playlist.songCount) songs",
                                 iconColor: getSystemPlaylistColor(for: playlist.name)
                             )
                         }
                     }
                 }
 
-                Section(header: Text("Tus listas")) {
+                Section(header: Text("Your playlists")) {
                     // User created playlists
                     ForEach(playlistManager.playlists) { playlist in
                         NavigationLink(destination: PlaylistDetailView(playlist: playlist)
@@ -47,16 +47,16 @@ struct PlaylistsView: View {
                             PlaylistRow(
                                 icon: "music.note.list",
                                 title: playlist.name,
-                                subtitle: "\(playlist.songCount) canciones",
+                                subtitle: "\(playlist.songCount) songs",
                                 iconColor: Colors.shared.getCurrentAccentColor()
                             )
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button("Eliminar", role: .destructive) {
+                            Button("Delete", role: .destructive) {
                                 playlistManager.deletePlaylist(playlist: playlist)
                             }
                             
-                            Button("Añadir canciones") {
+                            Button("Add songs") {
                                 selectedPlaylist = playlist
                                 showingAddSongs = true
                             }
@@ -92,11 +92,11 @@ struct PlaylistsView: View {
     // Helper functions for system playlist icons and colors
     private func getSystemPlaylistIcon(for name: String) -> String {
         switch name {
-        case "Himnario Nuevo":
+        case "Seventh-day Adventist Hymnal 1985":
             return "book.fill"
-        case "Himnario Antiguo":
+        case "Seventh-day Adventist Hymnal 1985":
             return "book.closed.fill"
-        case "Favoritos":
+        case "Favorites":
             return "heart.fill"
         default:
             return "music.note.list"
@@ -105,11 +105,11 @@ struct PlaylistsView: View {
     
     private func getSystemPlaylistColor(for name: String) -> Color {
         switch name {
-        case "Himnario Nuevo":
+        case "Seventh-day Adventist Hymnal 1985":
             return .blue
-        case "Himnario Antiguo":
+        case "Seventh-day Adventist Hymnal 1985":
             return .brown
-        case "Favoritos":
+        case "Favorites":
             return .red
         default:
             return Colors.shared.getCurrentAccentColor()
