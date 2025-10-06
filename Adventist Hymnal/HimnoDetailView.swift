@@ -58,11 +58,11 @@ struct HimnoDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text("Letra")
+                        Text("Lyrics")
                             .font(.headline)
                             .fontWeight(.semibold)
                         Spacer()
-                        Text("Tamaño: \(Int(settings.fontSize))")
+                        Text("Size: \(Int(settings.fontSize))")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
