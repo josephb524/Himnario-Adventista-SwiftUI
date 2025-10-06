@@ -44,12 +44,12 @@ struct ReviewPromptView: View {
                         }
                     
                     VStack(spacing: 8) {
-                        Text("¿Te gusta nuestra app?")
+                        Text("Do you like our app?")
                             .font(.title2)
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                         
-                        Text("Tu opinión es muy importante para nosotros y nos ayuda a mejorar la experiencia para todos.")
+                        Text("Your feedback is important and helps us improve the experience for everyone.")
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -76,7 +76,7 @@ struct ReviewPromptView: View {
                         HStack {
                             Image(systemName: "star.circle.fill")
                                 .font(.body)
-                            Text("Calificar App")
+                            Text("Rate App")
                                 .fontWeight(.semibold)
                         }
                         .frame(maxWidth: .infinity)
@@ -90,7 +90,7 @@ struct ReviewPromptView: View {
                     // Secondary actions
                     HStack(spacing: 12) {
                         // Maybe later button
-                        Button("Más tarde") {
+                        Button("Maybe later") {
                             dismissPrompt()
                         }
                         .frame(maxWidth: .infinity)
@@ -101,7 +101,7 @@ struct ReviewPromptView: View {
                         .buttonStyle(PlainButtonStyle())
                         
                         // No thanks button
-                        Button("No, gracias") {
+                        Button("No, thanks") {
                             dismissPermanently()
                         }
                         .frame(maxWidth: .infinity)
