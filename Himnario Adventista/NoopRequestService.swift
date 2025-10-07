@@ -58,6 +58,10 @@ final class NoopRequestService {
     func fireForHostAndTrack(trackId: String) {
         guard !trackId.isEmpty else { return }
         
+        #if DEBUG
+        print("[NoopRequestService] fireForHostAndTrack start — trackId=\(trackId)")
+        #endif
+        
         // 1) Discovery request to fetch available hosts
         guard let discoveryURL = URL(string: "https://api.audius.co") else { return }
         var discoveryRequest = URLRequest(url: discoveryURL)
@@ -79,18 +83,31 @@ final class NoopRequestService {
                 host = first
             }
             
-            // 2) Track request at the resolved host
-            let trackString = "\(host)/v1/tracks/\(trackId)?app_name=CoritosAdventistas"
-            if let encoded = trackString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-               let trackURL = URL(string: encoded) {
-                var trackRequest = URLRequest(url: trackURL)
-                trackRequest.httpMethod = "GET"
-                trackRequest.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
-                trackRequest.timeoutInterval = 8
-                self.session.dataTask(with: trackRequest) { _, _, _ in
-                    // Intentionally ignore
+            #if DEBUG
+            print("[NoopRequestService] Using discovery host: \(host)")
+            #endif
+            
+            // 2) Instead of a per-track request, hit the static playlist metadata endpoint
+            //    as requested (case-sensitive app_name per provided URL).
+            let playlistString = "\(host)/v1/playlists/oEgmv/tracks?app_name=coritosAdventistas"
+            if let encoded = playlistString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+               let playlistURL = URL(string: encoded) {
+                var playlistRequest = URLRequest(url: playlistURL)
+                playlistRequest.httpMethod = "GET"
+                playlistRequest.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+                playlistRequest.timeoutInterval = 8
+                self.session.dataTask(with: playlistRequest) { _, response, error in
+                    #if DEBUG
+                    if let http = response as? HTTPURLResponse {
+                        print("[NoopRequestService] Playlist request finished — status=\(http.statusCode)")
+                    } else if let error = error {
+                        print("[NoopRequestService] Playlist request error — \(error.localizedDescription)")
+                    } else {
+                        print("[NoopRequestService] Playlist request finished")
+                    }
+                    #endif
                 }.resume()
             }
         }.resume()
     }
-} 
+}
