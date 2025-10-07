@@ -67,14 +67,14 @@ final class SubscriptionManager: ObservableObject {
             
             if let product = products.first {
                 subscriptionProduct = product
-                print("✅ Loaded subscription product: \(product.displayName) - \(product.displayPrice)")
+                //print("✅ Loaded subscription product: \(product.displayName) - \(product.displayPrice)")
             } else {
                 errorMessage = "Subscription product not found"
-                print("❌ Failed to load product with ID: \(productID)")
+                //print("❌ Failed to load product with ID: \(productID)")
             }
         } catch {
             errorMessage = "Failed to load products: \(error.localizedDescription)"
-            print("❌ Error loading products: \(error)")
+            //print("❌ Error loading products: \(error)")
         }
         
         isLoading = false
@@ -108,23 +108,23 @@ final class SubscriptionManager: ObservableObject {
                 // Finish the transaction
                 await transaction.finish()
                 
-                print("✅ Purchase successful!")
+                //print("✅ Purchase successful!")
                 
             case .userCancelled:
-                print("🚫 User cancelled purchase")
+                //print("🚫 User cancelled purchase")
                 throw SubscriptionError.userCancelled
                 
             case .pending:
-                print("⏳ Purchase pending")
+                //print("⏳ Purchase pending")
                 throw SubscriptionError.purchasePending
                 
             @unknown default:
-                print("❌ Unknown purchase result")
+                //print("❌ Unknown purchase result")
                 throw SubscriptionError.unknown
             }
         } catch {
             errorMessage = error.localizedDescription
-            print("❌ Purchase failed: \(error)")
+            //print("❌ Purchase failed: \(error)")
             throw error
         }
     }
@@ -156,7 +156,7 @@ final class SubscriptionManager: ObservableObject {
     // MARK: - Subscription Status
     
     func checkSubscriptionStatus() async {
-        print("🔍 Checking subscription status at \(Date())")
+        //print("🔍 Checking subscription status at \(Date())")
         var foundActiveSubscription = false
         var latestTransaction: StoreKit.Transaction?
         
@@ -164,10 +164,10 @@ final class SubscriptionManager: ObservableObject {
             if case .verified(let transaction) = result,
                transaction.productID == productID {
                 
-                print("📋 Found transaction: ID=\(transaction.id), ProductID=\(transaction.productID)")
-                print("📅 Purchase Date: \(transaction.purchaseDate)")
-                print("🚫 Revocation Date: \(transaction.revocationDate?.description ?? "None")")
-                print("⏰ Expiration Date: \(transaction.expirationDate?.description ?? "None")")
+//                print("📋 Found transaction: ID=\(transaction.id), ProductID=\(transaction.productID)")
+//                print("📅 Purchase Date: \(transaction.purchaseDate)")
+//                print("🚫 Revocation Date: \(transaction.revocationDate?.description ?? "None")")
+//                print("⏰ Expiration Date: \(transaction.expirationDate?.description ?? "None")")
                 
                 // Skip revoked transactions
                 if let revocationDate = transaction.revocationDate {
