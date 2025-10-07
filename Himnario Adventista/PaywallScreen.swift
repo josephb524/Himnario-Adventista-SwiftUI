@@ -169,24 +169,163 @@ private struct FeatureRow: View {
     }
 }
 
-// Placeholder views to avoid missing references during integration
 struct PrivacyPolicyView: View {
     var body: some View {
         ScrollView {
-            Text("Privacy Policy placeholder")
-                .padding()
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Política de Privacidad")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.bottom)
+                
+                Text("Última actualización: \(Date().formatted(date: .abbreviated, time: .omitted))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom)
+                
+                Group {
+                    Text("1. Información que Recopilamos")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Recopilamos información mínima necesaria para proporcionar nuestros servicios:")
+                        .padding(.top, 4)
+                    
+                    Text("• Información de suscripción para procesar pagos\n• Preferencias de usuario para personalizar la experiencia\n• Datos de uso anónimos para mejorar la aplicación")
+                        .padding(.top, 4)
+                    
+                    Text("2. Uso de la Información")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Utilizamos la información recopilada para:")
+                        .padding(.top, 4)
+                    
+                    Text("• Procesar suscripciones y pagos\n• Mejorar la funcionalidad de la aplicación\n• Proporcionar soporte al cliente\n• Cumplir con obligaciones legales")
+                        .padding(.top, 4)
+                    
+                    Text("3. Compartir Información")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("No vendemos, alquilamos ni compartimos su información personal con terceros, excepto cuando sea necesario para procesar pagos a través de Apple.")
+                        .padding(.top, 4)
+                    
+                    Text("4. Seguridad")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Implementamos medidas de seguridad apropiadas para proteger su información personal contra acceso no autorizado, alteración, divulgación o destrucción.")
+                        .padding(.top, 4)
+                    
+                    Text("5. Sus Derechos")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Usted tiene derecho a acceder, corregir o eliminar su información personal. Puede contactarnos en cualquier momento para ejercer estos derechos.")
+                        .padding(.top, 4)
+                    
+                    Text("6. Contacto")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos a través de la App Store o por correo electrónico: eltercerelias3@hotmail.com")
+                        .padding(.top, 4)
+                }
+            }
+            .padding()
         }
         .navigationTitle("Política de Privacidad")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct TermsView: View {
     var body: some View {
         ScrollView {
-            Text("Terms of Use placeholder")
-                .padding()
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Términos de Uso")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.bottom)
+                
+                Text("Última actualización: \(Date().formatted(date: .abbreviated, time: .omitted))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.bottom)
+                
+                Group {
+                    Text("1. Aceptación de los Términos")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Al utilizar la aplicación Himnario Adventista, usted acepta estar sujeto a estos términos y condiciones de uso.")
+                        .padding(.top, 4)
+                    
+                    Text("2. Descripción del Servicio")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Himnario Adventista es una aplicación móvil que proporciona acceso a himnos adventistas, listas de reproducción personalizadas y funcionalidades premium mediante suscripción.")
+                        .padding(.top, 4)
+                    
+                    Text("3. Suscripciones y Pagos")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("• Las suscripciones se facturan automáticamente\n• Los pagos se procesan a través de la App Store de Apple\n• Puede cancelar su suscripción en cualquier momento desde la configuración de su dispositivo\n• No ofrecemos reembolsos por suscripciones ya utilizadas")
+                        .padding(.top, 4)
+                    
+                    Text("4. Uso Aceptable")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Usted se compromete a utilizar la aplicación de manera responsable y no debe:")
+                        .padding(.top, 4)
+                    
+                    Text("• Intentar acceder a funciones premium sin suscripción válida\n• Usar la aplicación para fines ilegales o no autorizados\n• Intentar modificar, descompilar o hacer ingeniería inversa de la aplicación")
+                        .padding(.top, 4)
+                    
+                    Text("5. Propiedad Intelectual")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Todos los himnos y contenido musical incluido en la aplicación son propiedad de sus respectivos dueños. El uso está limitado al disfrute personal y no comercial.")
+                        .padding(.top, 4)
+                    
+                    Text("6. Limitación de Responsabilidad")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("La aplicación se proporciona 'tal como está'. No garantizamos que la aplicación esté libre de errores o interrupciones, y no seremos responsables por daños directos o indirectos.")
+                        .padding(.top, 4)
+                    
+                    Text("7. Modificaciones")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en la aplicación.")
+                        .padding(.top, 4)
+                    
+                    Text("8. Terminación")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Podemos suspender o terminar su acceso a la aplicación en cualquier momento si viola estos términos de uso.")
+                        .padding(.top, 4)
+                    
+                    Text("9. Contacto")
+                        .font(.headline)
+                        .padding(.top)
+                    
+                    Text("Para preguntas sobre estos términos, puede contactarnos a través de la App Store o por correo electrónico: eltercerelias3@hotmail.com")
+                        .padding(.top, 4)
+                }
+            }
+            .padding()
         }
         .navigationTitle("Términos de Uso")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
