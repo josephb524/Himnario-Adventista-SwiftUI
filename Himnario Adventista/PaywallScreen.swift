@@ -15,9 +15,10 @@ struct PaywallScreen: View {
     var body: some View {
         VStack(spacing: 24) {
             Text("Desbloquea Funciones Premium de Playlists")
-                .font(.title)
-                .bold()
+                .font(.title2)
+                .fontWeight(.bold)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
             
             VStack(alignment: .leading, spacing: 20) {
                 FeatureRow(icon: "music.note.list", text: "Crea listas de reproducción personalizadas ilimitadas")
@@ -26,6 +27,7 @@ struct PaywallScreen: View {
                 FeatureRow(icon: "shuffle", text: "Modos de aleatorio y repetición")
                 FeatureRow(icon: "heart", text: "Guarda y organiza tus himnos favoritos")
             }
+            .padding(.horizontal, 8)
             .padding(.vertical)
             
             VStack(spacing: 8) {
@@ -160,6 +162,8 @@ private struct FeatureRow: View {
                 .foregroundColor(.blue)
             Text(text)
                 .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
