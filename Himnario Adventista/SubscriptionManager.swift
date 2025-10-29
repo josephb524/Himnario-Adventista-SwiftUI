@@ -16,6 +16,7 @@ final class SubscriptionManager: ObservableObject {
     @Published private(set) var isSubscribed = false
     @Published private(set) var expiryDate: Date? = nil
     @Published private(set) var subscriptionProduct: Product? = nil
+    @Published private(set) var subscriptionProducts: [String: Product] = [:] // Map of productID to Product
     @Published private(set) var isLoading = false
     @Published private(set) var errorMessage: String? = nil
     
@@ -25,8 +26,14 @@ final class SubscriptionManager: ObservableObject {
     @Published private(set) var renewalStatus: RenewalStatus = .unknown
     @Published private(set) var daysUntilRenewal: Int? = nil
     
-    // TODO: Update this with your actual product ID from App Store Connect
-    private let productID = "jose.pimentel.playlist.yearly"
+    // Product IDs
+    let productIDs = [
+        "com.JosePimentel.HimnarioViejoYNuevo.Basico",
+        "com.JosePimentel.HimnarioViejoYNuevo.Seguidor",
+        "com.JosePimentel.HimnarioViejoYNuevo.Patrocinador",
+        "com.JosePimentel.HimnarioViejoYNuevo.Benefactor"
+    ]
+    
     private var updateListenerTask: Task<Void, Never>? = nil
     private var expirationCheckTimer: Timer?
 
@@ -63,14 +70,20 @@ final class SubscriptionManager: ObservableObject {
             isLoading = true
             errorMessage = nil
             
-            let products = try await Product.products(for: [productID])
+            let products = try await Product.products(for: productIDs)
             
-            if let product = products.first {
-                subscriptionProduct = product
+            // Map products by their ID for easy access
+            for product in products {
+                subscriptionProducts[product.id] = product
                 //print("✅ Loaded subscription product: \(product.displayName) - \(product.displayPrice)")
-            } else {
-                errorMessage = "Subscription product not found"
-                //print("❌ Failed to load product with ID: \(productID)")
+            }
+            
+            // Set the first product as the default (for backward compatibility)
+            subscriptionProduct = products.first
+            
+            if products.isEmpty {
+                errorMessage = "No subscription products found"
+                //print("❌ Failed to load any products")
             }
         } catch {
             errorMessage = "Failed to load products: \(error.localizedDescription)"
@@ -79,11 +92,16 @@ final class SubscriptionManager: ObservableObject {
         
         isLoading = false
     }
+    
+    // Get a specific product by ID
+    func getProduct(for productID: String) -> Product? {
+        return subscriptionProducts[productID]
+    }
 
     // MARK: - Purchase Flow
     
-    func purchase() async throws {
-        guard let product = subscriptionProduct else {
+    func purchase(productID: String) async throws {
+        guard let product = subscriptionProducts[productID] else {
             throw SubscriptionError.productNotLoaded
         }
         
@@ -162,7 +180,7 @@ final class SubscriptionManager: ObservableObject {
         
         for await result in StoreKit.Transaction.currentEntitlements {
             if case .verified(let transaction) = result,
-               transaction.productID == productID {
+               productIDs.contains(transaction.productID) {
                 
 //                print("📋 Found transaction: ID=\(transaction.id), ProductID=\(transaction.productID)")
 //                print("📅 Purchase Date: \(transaction.purchaseDate)")
@@ -293,8 +311,8 @@ final class SubscriptionManager: ObservableObject {
                         print("✅ Verified transaction: \(transaction.id) for product: \(transaction.productID)")
                     }
                     
-                    let currentProductID = await self.productID
-                    if transaction.productID == currentProductID {
+                    let currentProductIDs = await self.productIDs
+                    if currentProductIDs.contains(transaction.productID) {
                         print("🎯 Processing transaction for our product")
                         await MainActor.run {
                             Task {

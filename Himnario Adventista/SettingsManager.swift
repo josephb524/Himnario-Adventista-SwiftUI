@@ -17,5 +17,8 @@ class SettingsManager: ObservableObject {
     // Review prompt state
     @Published var showReviewPrompt = false
     
+    // Support prompt state
+    @Published var showSupportPrompt = false
+    
     private init() {}
 }

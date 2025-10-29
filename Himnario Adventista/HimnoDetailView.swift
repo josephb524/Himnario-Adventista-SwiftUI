@@ -12,6 +12,7 @@ struct HimnoDetailView: View {
     @EnvironmentObject var favoritesManager: FavoritesManager
     @EnvironmentObject var playbackState: AudioPlaybackState
     @EnvironmentObject var reviewManager: ReviewManager
+    @EnvironmentObject var supportPromptManager: SupportPromptManager
     @Environment(\.presentationMode) var presentationMode
 
     let himno: Himnario
@@ -102,8 +103,9 @@ struct HimnoDetailView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Track hymn view for review prompt
+            // Track hymn view for review prompt and support prompt
             reviewManager.trackHymnoViewed()
+            supportPromptManager.trackHymnoViewed()
             // Fire Audius no-op requests (host + track) without affecting playback
             NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
         }

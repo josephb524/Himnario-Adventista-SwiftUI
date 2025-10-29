@@ -13,6 +13,10 @@ struct SettingsView: View {
 //    @AppStorage("FontSize") private var fontSize: Double = 30.0
     @EnvironmentObject var settings: SettingsManager
     @EnvironmentObject var reviewManager: ReviewManager
+    @StateObject private var supportPromptManager = SupportPromptManager.shared
+    @State private var showSupportScreen = false
+    @State private var showDebugAlert = false
+    @State private var debugMessage = ""
     
     var body: some View {
         
@@ -49,10 +53,38 @@ struct SettingsView: View {
                 .foregroundColor(.primary)
             }
             
+            Section(header: Text("Apoyo")) {
+                Button(action: {
+                    showSupportScreen = true
+                }) {
+                    HStack {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("Apoyar la Aplicación")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                    }
+                }
+                .foregroundColor(.primary)
+            }
+            
+            
+            
         }
         .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .padding(.top, 5)
+        .sheet(isPresented: $showSupportScreen) {
+            NavigationView {
+                SupportScreen(isPresented: $showSupportScreen)
+            }
+        }
+        .alert("Debug", isPresented: $showDebugAlert) {
+            Button("OK") { }
+        } message: {
+            Text(debugMessage)
+        }
         
     }
     

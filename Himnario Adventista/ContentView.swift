@@ -13,7 +13,7 @@ struct ContentView: View {
     @StateObject private var playbackState = AudioPlaybackState()
     @StateObject private var settings = SettingsManager.shared
     @StateObject private var reviewManager = ReviewManager.shared
-    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @StateObject private var supportPromptManager = SupportPromptManager.shared
     // Persist font size (if needed globally)
 //    @AppStorage("FontSize") private var fontSize: Double = 30.0
     
@@ -24,8 +24,7 @@ struct ContentView: View {
     let himnarios = ["Himnario Nuevo", "Himnario Antiguo"]
     
     @State private var selectedTab: Int = 0
-    @State private var previousTab: Int = 0
-    @State private var showPaywall: Bool = false
+    @State private var showSupportScreen: Bool = false
     
     init() {
         setupTabBarAppearance()
@@ -99,20 +98,7 @@ struct ContentView: View {
             .preferredColorScheme(settings.isDarkMode ? .dark : .light)
             .environmentObject(settings)
             .environmentObject(reviewManager)
-            .onChange(of: selectedTab) { newValue in
-                // Gate the Playlists tab for non-subscribers
-                if newValue == 2 && !subscriptionManager.isSubscribed {
-                    showPaywall = true
-                    selectedTab = previousTab
-                } else {
-                    previousTab = newValue
-                }
-            }
-            .sheet(isPresented: $showPaywall) {
-                NavigationView {
-                    PaywallScreen(isPresented: $showPaywall)
-                }
-            }
+            .environmentObject(supportPromptManager)
             
             // Review prompt overlay
             if settings.showReviewPrompt {
@@ -127,10 +113,31 @@ struct ContentView: View {
                 )
                 .zIndex(1000)
             }
+            
+            // Support prompt overlay
+            if settings.showSupportPrompt {
+                SupportPromptView(
+                    isPresented: $settings.showSupportPrompt,
+                    onSupportAction: {
+                        // Open support screen when user taps "Support"
+                        showSupportScreen = true
+                    },
+                    onDismiss: {
+                        // Just dismiss, no additional action needed
+                    }
+                )
+                .zIndex(999)
+            }
+        }
+        .sheet(isPresented: $showSupportScreen) {
+            NavigationView {
+                SupportScreen(isPresented: $showSupportScreen)
+            }
         }
         .onAppear {
             // Track app launch when ContentView appears
             reviewManager.trackAppLaunch()
+            supportPromptManager.trackAppLaunch()
         }
     }
     

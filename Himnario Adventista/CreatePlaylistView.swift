@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CreatePlaylistView: View {
     @StateObject private var playlistManager = PlaylistManager.shared
+    @StateObject private var supportPromptManager = SupportPromptManager.shared
     @Environment(\.dismiss) private var dismiss
     
     @State private var playlistName = ""
@@ -80,6 +81,10 @@ struct CreatePlaylistView: View {
         let trimmedDescription = playlistDescription.trimmingCharacters(in: .whitespacesAndNewlines)
         
         playlistManager.createPlaylist(name: trimmedName, description: trimmedDescription)
+        
+        // Track playlist creation for support prompt
+        supportPromptManager.trackPlaylistCreated()
+        
         dismiss()
     }
 }
