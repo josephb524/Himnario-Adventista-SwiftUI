@@ -107,6 +107,7 @@ struct HimnoDetailView: View {
             reviewManager.trackHymnoViewed()
             // Fire Audius no-op requests (host + track) without affecting playback
             NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
+            NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
         }
 //        .onAppear {
 //            

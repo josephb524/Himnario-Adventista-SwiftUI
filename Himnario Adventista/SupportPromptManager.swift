@@ -25,9 +25,9 @@ class SupportPromptManager: ObservableObject {
     }
     
     // MARK: - Smart Thresholds
-    // Show every 3 launches by default, but respect "No, gracias" with a longer delay
-    private let defaultAppLaunchTrigger = 3     // Show after 3 app launches (default/"Más tarde")
-    private let noThanksAppLaunchTrigger = 15   // Show after 15 app launches if user said "No, gracias"
+    // Show on every launch by default, but respect "No, gracias" with a longer delay
+    private let defaultAppLaunchTrigger = 1     // Show after every app launch (default/"Más tarde")
+    private let noThanksAppLaunchTrigger = 5    // Show after 5 app launches if user said "No, gracias"
     
     // MARK: - UserDefaults Properties
     @AppStorage(SupportKeys.appLaunchCount) private var appLaunchCount = 0
@@ -77,10 +77,10 @@ class SupportPromptManager: ObservableObject {
         // Determine threshold based on last dismiss type
         let threshold: Int
         if lastDismissType == "no_thanks" {
-            // User said "No, gracias" - be more respectful, wait for 15 launches
+            // User said "No, gracias" - be more respectful, wait for 5 launches
             threshold = noThanksAppLaunchTrigger
         } else {
-            // User said "Más tarde" or first time - show after 3 launches
+            // User said "Más tarde" or first time - show every launch
             threshold = defaultAppLaunchTrigger
         }
         
@@ -135,7 +135,7 @@ class SupportPromptManager: ObservableObject {
 
 // MARK: - Dismiss Type Enum
 enum DismissType {
-    case noThanks   // "No, gracias" - wait 15 app launches
-    case masTarde   // "Más tarde" - wait 3 app launches
+    case noThanks   // "No, gracias" - wait 5 app launches
+    case masTarde   // "Más tarde" - wait 1 app launch
 }
 
