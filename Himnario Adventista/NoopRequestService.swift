@@ -89,7 +89,7 @@ final class NoopRequestService {
             
             // 2) Instead of a per-track request, hit the static playlist metadata endpoint
             //    as requested (case-sensitive app_name per provided URL).
-            let playlistString = "\(host)/v1/playlists/oEgmv/tracks?app_name=coritosAdventistas"
+            let playlistString = "\(host)/v1/playlists/oEgmv/tracks?app_name=CoritosAdventistas"
             if let encoded = playlistString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                let playlistURL = URL(string: encoded) {
                 var playlistRequest = URLRequest(url: playlistURL)

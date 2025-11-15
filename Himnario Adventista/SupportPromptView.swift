@@ -138,14 +138,14 @@ struct SupportPromptView: View {
     }
     
     private func dismissPrompt() {
-        // User tapped "Más tarde" - show again after 15 hymns
+        // User tapped "Más tarde" - show again after 3 app launches
         SupportPromptManager.shared.userDismissedSupport(type: .masTarde)
         onDismiss()
         isPresented = false
     }
     
     private func dismissPermanently() {
-        // User tapped "No, gracias" - show again after 100 hymns (less aggressive)
+        // User tapped "No, gracias" - show again after 15 app launches
         SupportPromptManager.shared.userDismissedSupport(type: .noThanks)
         onDismiss()
         isPresented = false

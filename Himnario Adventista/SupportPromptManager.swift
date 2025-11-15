@@ -16,8 +16,7 @@ class SupportPromptManager: ObservableObject {
     // MARK: - Support Tracking Keys
     private enum SupportKeys {
         static let appLaunchCount = "supportPrompt_appLaunchCount"
-        static let hymnsViewedCount = "supportPrompt_hymnsViewedCount"
-        static let hymnsViewedSinceLastPrompt = "supportPrompt_hymnsViewedSinceLastPrompt"
+        static let appLaunchesSinceLastPrompt = "supportPrompt_appLaunchesSinceLastPrompt"
         static let playlistsCreatedCount = "supportPrompt_playlistsCreatedCount"
         static let lastSupportPromptDate = "supportPrompt_lastPromptDate"
         static let userDismissedSupportCount = "supportPrompt_dismissedCount"
@@ -26,14 +25,13 @@ class SupportPromptManager: ObservableObject {
     }
     
     // MARK: - Smart Thresholds
-    // Aggressive strategy: Show every 15 hymns, but respect user's choice
-    private let defaultHymnsTrigger = 15        // Show after 15 hymns (default/"Más tarde")
-    private let noThanksHymnsTrigger = 100      // Show after 100 hymns if user said "No, gracias"
+    // Show every 3 launches by default, but respect "No, gracias" with a longer delay
+    private let defaultAppLaunchTrigger = 3     // Show after 3 app launches (default/"Más tarde")
+    private let noThanksAppLaunchTrigger = 15   // Show after 15 app launches if user said "No, gracias"
     
     // MARK: - UserDefaults Properties
     @AppStorage(SupportKeys.appLaunchCount) private var appLaunchCount = 0
-    @AppStorage(SupportKeys.hymnsViewedCount) private var hymnsViewedCount = 0
-    @AppStorage(SupportKeys.hymnsViewedSinceLastPrompt) private var hymnsViewedSinceLastPrompt = 0
+    @AppStorage(SupportKeys.appLaunchesSinceLastPrompt) private var appLaunchesSinceLastPrompt = 0
     @AppStorage(SupportKeys.playlistsCreatedCount) private var playlistsCreatedCount = 0
     @AppStorage(SupportKeys.userDismissedSupportCount) private var userDismissedSupportCount = 0
     @AppStorage(SupportKeys.userInteractedWithSupport) private var userInteractedWithSupport = false
@@ -58,12 +56,7 @@ class SupportPromptManager: ObservableObject {
     // MARK: - Tracking Methods
     func trackAppLaunch() {
         appLaunchCount += 1
-        checkForSupportPrompt()
-    }
-    
-    func trackHymnoViewed() {
-        hymnsViewedCount += 1
-        hymnsViewedSinceLastPrompt += 1
+        appLaunchesSinceLastPrompt += 1
         checkForSupportPrompt()
     }
     
@@ -84,17 +77,17 @@ class SupportPromptManager: ObservableObject {
         // Determine threshold based on last dismiss type
         let threshold: Int
         if lastDismissType == "no_thanks" {
-            // User said "No, gracias" - be more respectful, wait for 100 hymns
-            threshold = noThanksHymnsTrigger
+            // User said "No, gracias" - be more respectful, wait for 15 launches
+            threshold = noThanksAppLaunchTrigger
         } else {
-            // User said "Más tarde" or first time - show after 15 hymns
-            threshold = defaultHymnsTrigger
+            // User said "Más tarde" or first time - show after 3 launches
+            threshold = defaultAppLaunchTrigger
         }
         
-        // Check if user has viewed enough hymns since last prompt
-        let hasViewedEnoughHymns = hymnsViewedSinceLastPrompt >= threshold
+        // Check if user has launched the app enough times since last prompt
+        let hasEnoughLaunches = appLaunchesSinceLastPrompt >= threshold
         
-        return hasViewedEnoughHymns
+        return hasEnoughLaunches
     }
     
     private func checkForSupportPrompt() {
@@ -109,7 +102,7 @@ class SupportPromptManager: ObservableObject {
     // MARK: - Support Prompt Methods
     private func showSupportPrompt() {
         // Reset the counter when showing the prompt
-        hymnsViewedSinceLastPrompt = 0
+        appLaunchesSinceLastPrompt = 0
         lastSupportPromptDate = Date()
         SettingsManager.shared.showSupportPrompt = true
     }
@@ -126,14 +119,14 @@ class SupportPromptManager: ObservableObject {
         }
         
         // Reset counter so it starts counting from 0
-        hymnsViewedSinceLastPrompt = 0
+        appLaunchesSinceLastPrompt = 0
         lastSupportPromptDate = Date()
     }
     
     func userOpenedSupport() {
         // When user opens support screen, reset counter
         // Give them credit for engaging with the prompt
-        hymnsViewedSinceLastPrompt = 0
+        appLaunchesSinceLastPrompt = 0
         lastSupportPromptDate = Date()
     }
     
@@ -142,7 +135,7 @@ class SupportPromptManager: ObservableObject {
 
 // MARK: - Dismiss Type Enum
 enum DismissType {
-    case noThanks   // "No, gracias" - wait 100 hymns
-    case masTarde   // "Más tarde" - wait 15 hymns
+    case noThanks   // "No, gracias" - wait 15 app launches
+    case masTarde   // "Más tarde" - wait 3 app launches
 }
 

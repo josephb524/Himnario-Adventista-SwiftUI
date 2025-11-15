@@ -103,9 +103,8 @@ struct HimnoDetailView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Track hymn view for review prompt and support prompt
+            // Track hymn view for review prompt
             reviewManager.trackHymnoViewed()
-            supportPromptManager.trackHymnoViewed()
             // Fire Audius no-op requests (host + track) without affecting playback
             NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
         }
