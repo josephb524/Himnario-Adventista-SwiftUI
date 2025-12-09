@@ -64,8 +64,13 @@ struct HimnoDetailView: View {
             HStack {
                 if !showPlaybackOptions {
                     Button(action: {
-                        withAnimation(.spring()) {
-                            showPlaybackOptions = true
+                        // Auto-play for "Antiguo" since only Canto is available
+                        if himno.himnarioVersion == "Antiguo" || himno.pistaID.isEmpty {
+                            playSong(isVocal: true)
+                        } else {
+                            withAnimation(.spring()) {
+                                showPlaybackOptions = true
+                            }
                         }
                     }) {
                         HStack {
