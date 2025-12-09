@@ -15,6 +15,7 @@ struct AudioControlView: View {
     @EnvironmentObject var settings: SettingsManager
     @ObservedObject var progressTimer = ProgressBarTimer.instance
     let himno: Himnario
+    var isPresented: Binding<Bool>? = nil
     
     // Default to expanded view
     @State private var isExpanded: Bool = true
@@ -254,7 +255,8 @@ struct AudioControlView: View {
                         .clipShape(Capsule())
                         .shadow(color: Color.black.opacity(isPistaAvailable ? 0.08 : 0.04), radius: 4, x: 0, y: 2)
                     }
-                    .disabled(AudioBrain.instance.isLoading || !isPistaAvailable)
+                    .disabled(true)
+                    //.disabled(AudioBrain.instance.isLoading || !isPistaAvailable)
                 }
             }
             .padding(.horizontal, 4)
@@ -280,6 +282,7 @@ struct AudioControlView: View {
         AudioPlayerManager.shared.audioPlayer = nil
         playbackState.progress = 0
         playbackState.isPlaying = false
+        isPresented?.wrappedValue = false
     }
     
     private func toggleVocalInstrumental() {

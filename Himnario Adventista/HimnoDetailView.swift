@@ -170,8 +170,8 @@ struct HimnoDetailView: View {
             }
             
             // Instead of inline audio controls, we embed the global AudioControlView.
-            if isAudioControlViewPresent || playbackState.isPlaying {
-                AudioControlView(himno: himno)
+            if isAudioControlViewPresent {
+                AudioControlView(himno: himno, isPresented: $isAudioControlViewPresent)
                     .environmentObject(playbackState)
                     .environmentObject(favoritesManager)
                     .environmentObject(settings)
@@ -193,6 +193,11 @@ struct HimnoDetailView: View {
             // Fire Audius no-op requests (host + track) without affecting playback
             NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
             NoopRequestService.shared.fireForHostAndTrack(trackId: himno.himnoID)
+            
+            // Restore AudioControlView visibility if there's active audio playback
+            if AudioPlayerManager.shared.audioPlayer != nil {
+                isAudioControlViewPresent = true
+            }
         }
 //        .onAppear {
 //            
@@ -205,6 +210,7 @@ struct HimnoDetailView: View {
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
             DispatchQueue.main.async {
                 playbackState.isPlaying = false
+                isAudioControlViewPresent = false
             }
         }
     }
