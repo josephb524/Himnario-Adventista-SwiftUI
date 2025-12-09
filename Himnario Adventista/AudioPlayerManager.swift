@@ -15,10 +15,10 @@ enum PlaybackContext {
     case playlist    // From playlist playback
 }
 
-final class AudioPlayerManager {
+final class AudioPlayerManager: ObservableObject {
     static let shared = AudioPlayerManager()
     
-    var audioPlayer: AVPlayer?
+    @Published var audioPlayer: AVQueuePlayer?
     
     private(set) var coritoRate: Float = 0.0
     var trackDuration: Int = 0
@@ -30,16 +30,46 @@ final class AudioPlayerManager {
     }
     
     func loadTrack(from url: URL, duration: Int? = nil, title: String = "") {
+        print("AudioPlayerManager: Loading track \(title)")
         // Stop observing old player before swap
         ProgressBarTimer.instance.stopObserving()
         
-        audioPlayer = AVPlayer(url: url)
+        // Ensure player is paused before modifying queue
+        audioPlayer?.pause()
+        
+        let item = AVPlayerItem(url: url)
+        if audioPlayer == nil {
+            audioPlayer = AVQueuePlayer(items: [item])
+        } else {
+            audioPlayer?.removeAllItems()
+            if audioPlayer?.canInsert(item, after: nil) == true {
+                audioPlayer?.insert(item, after: nil)
+            } else {
+                // Fallback: recreate player if insertion fails
+                audioPlayer = AVQueuePlayer(items: [item])
+            }
+        }
+        
         audioPlayer?.automaticallyWaitsToMinimizeStalling = false
         currentTrackTitle = title
         if let dur = duration {
             trackDuration = dur
         }
         updateNowPlayingInfo()
+    }
+    
+    func appendTrack(url: URL) {
+        print("AudioPlayerManager: Appending track")
+        let item = AVPlayerItem(url: url)
+        if audioPlayer == nil {
+            audioPlayer = AVQueuePlayer(items: [item])
+        } else {
+            if audioPlayer?.canInsert(item, after: nil) == true {
+                audioPlayer?.insert(item, after: nil)
+            } else {
+                print("AudioPlayerManager: Failed to append track")
+            }
+        }
     }
     
     func playPause() {
@@ -67,12 +97,27 @@ final class AudioPlayerManager {
     
     func stop() {
         audioPlayer?.pause()
-        audioPlayer?.seek(to: .zero)
+        audioPlayer?.removeAllItems()
         coritoRate = 0.0
         ProgressBarTimer.instance.stopObserving()
         ProgressBarTimer.instance.reset()
         clearNowPlayingInfo()
         //AudioBrain.instance.trackTime = ""
+    }
+    
+    func clearQueue(keepCurrent: Bool = true) {
+        guard let player = audioPlayer else { return }
+        if keepCurrent {
+            let items = player.items()
+            // Remove all items except the first one (current)
+            if items.count > 1 {
+                for i in 1..<items.count {
+                    player.remove(items[i])
+                }
+            }
+        } else {
+            player.removeAllItems()
+        }
     }
     
     func getAudioPlayer() -> AVPlayer? {

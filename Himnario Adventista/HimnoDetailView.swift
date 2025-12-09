@@ -16,6 +16,9 @@ struct HimnoDetailView: View {
     @Environment(\.presentationMode) var presentationMode
 
     let himno: Himnario
+    
+    @State private var isAudioControlViewPresent: Bool = false
+    @State private var showPlaybackOptions: Bool = false
 
     // Persist font size using AppStorage.
     @EnvironmentObject var settings: SettingsManager
@@ -33,6 +36,7 @@ struct HimnoDetailView: View {
                             .fill(himno.himnarioVersion == "Nuevo" ? Color.blue.opacity(0.1) : Color.orange.opacity(0.1))
                     )
                     .foregroundColor(himno.himnarioVersion == "Nuevo" ? .blue : .orange)
+                    .padding(.leading)
                 
                 if favoritesManager.isFavorite(id: himno.numericId, himnarioVersion: himno.himnarioVersion) {
                     HStack(spacing: 4) {
@@ -56,6 +60,84 @@ struct HimnoDetailView: View {
                     .padding()
                 }
             }
+            
+            HStack {
+                if !showPlaybackOptions {
+                    Button(action: {
+                        withAnimation(.spring()) {
+                            showPlaybackOptions = true
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "play.fill")
+                            Text("Reproducir")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(Colors.shared.getCurrentAccentColor())
+                        )
+                        .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: 3)
+                    }
+                    .transition(.scale.combined(with: .opacity))
+                } else {
+                    HStack(spacing: 12) {
+                        Button(action: { playSong(isVocal: true) }) {
+                            HStack {
+                                Image(systemName: "music.mic")
+                                Text("Canto")
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(Colors.shared.getCurrentAccentColor())
+                            )
+                            .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: 3)
+                        }
+                        
+                        if !himno.pistaID.isEmpty && himno.himnarioVersion != "Antiguo" {
+                            Button(action: { playSong(isVocal: false) }) {
+                                HStack {
+                                    Image(systemName: "pianokeys")
+                                    Text("Pista")
+                                }
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .fill(Colors.shared.getCurrentAccentColor())
+                                )
+                                .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: 3)
+                            }
+                        }
+                        
+                        // Close button in case user changes mind
+                        Button(action: {
+                            withAnimation(.spring()) {
+                                showPlaybackOptions = false
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .transition(.scale.combined(with: .opacity))
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -88,10 +170,13 @@ struct HimnoDetailView: View {
             }
             
             // Instead of inline audio controls, we embed the global AudioControlView.
-            AudioControlView(himno: himno)
-                .environmentObject(playbackState)
-                .environmentObject(favoritesManager)
-                .environmentObject(settings)
+            if isAudioControlViewPresent || playbackState.isPlaying {
+                AudioControlView(himno: himno)
+                    .environmentObject(playbackState)
+                    .environmentObject(favoritesManager)
+                    .environmentObject(settings)
+            }
+            
             
             
             Spacer()
@@ -161,6 +246,41 @@ struct HimnoDetailView: View {
         AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
                                               indexC: (himno.numericId - 1),
                                               isVocal: playbackState.isVocal)
+    }
+    
+    private func playSong(isVocal: Bool) {
+        playbackState.isVocal = isVocal
+        
+        // Set playback context to individual for single hymn playback
+        AudioPlayerManager.shared.setPlaybackContext(.individual)
+        
+        // Clear playlist delegate for individual playback
+        ProgressBarTimer.instance.playbackCompletionDelegate = nil
+        
+        playbackState.himnoTitle = himno.title
+        playbackState.numericId = himno.numericId
+        playbackState.himnoVersion = himno.himnarioVersion
+        
+        AudioBrain.instance.audioRequirement(coritoFav: himno.himnarioVersion,
+                                              indexC: (himno.numericId - 1),
+                                              isVocal: playbackState.isVocal)
+        
+        AudioPlayerManager.shared.stop()
+        
+        let trackID = (playbackState.isVocal || playbackState.himnoVersion == "Antiguo" || himno.pistaID.isEmpty) ? himno.himnoID : himno.pistaID
+        
+        AudioBrain.instance.getTrack(by: trackID, title: himno.title) {
+            DispatchQueue.main.async {
+                playbackState.progress = 0
+                AudioPlayerManager.shared.play()
+                playbackState.isPlaying = true
+                
+                withAnimation {
+                    isAudioControlViewPresent = true
+                    showPlaybackOptions = false
+                }
+            }
+        }
     }
 }
 

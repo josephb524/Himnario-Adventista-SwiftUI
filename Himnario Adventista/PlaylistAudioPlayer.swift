@@ -22,21 +22,63 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
     private var currentQueueIndex: Int = 0
     
     private var cancellables = Set<AnyCancellable>()
+    private var playerCancellable: AnyCancellable?
     
     init() {
         // Set this instance as the playback completion delegate
         ProgressBarTimer.instance.playbackCompletionDelegate = self
         
-        // Fallback: listen to AVPlayer end notifications and advance when in playlist context
+        // Listen to AVPlayerItemDidPlayToEndTime to handle queue transitions
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] notification in
                 guard let self = self else { return }
                 if AudioPlayerManager.shared.playbackContext == .playlist {
-                    DispatchQueue.main.async { self.trackDidComplete() }
+                    if self.repeatMode == .one {
+                        self.playCurrentSong()
+                    }
                 }
             }
             .store(in: &cancellables)
+            
+        // Listen for playback failures
+        NotificationCenter.default.publisher(for: .AVPlayerItemFailedToPlayToEndTime)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] notification in
+                guard let self = self else { return }
+                if let error = (notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error) {
+                    print("PlaylistAudioPlayer: Playback failed with error: \(error.localizedDescription)")
+                    if AudioPlayerManager.shared.playbackContext == .playlist {
+                        self.nextSong()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Observe audioPlayer instance changes
+        AudioPlayerManager.shared.$audioPlayer
+            .receive(on: RunLoop.main)
+            .sink { [weak self] player in
+                self?.setupPlayerObservation(player)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func setupPlayerObservation(_ player: AVQueuePlayer?) {
+        // Cancel previous player observation
+        playerCancellable?.cancel()
+        
+        guard let player = player else { return }
+        
+        // Observe current item changes on the new player
+        playerCancellable = player.publisher(for: \.currentItem)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newItem in
+                guard let self = self else { return }
+                if AudioPlayerManager.shared.playbackContext == .playlist {
+                    self.handleTrackChange(newItem: newItem)
+                }
+            }
     }
     
     enum RepeatMode: String, CaseIterable {
@@ -112,7 +154,6 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
         
         // For now default to vocal track; fall back if unavailable
         let trackId = (song.himnarioVersion == "Antiguo" || song.pistaID.isEmpty) ? song.himnoID : song.himnoID
-        AudioPlayerManager.shared.stop()
         
         // Add timeout to prevent getting stuck in loading state
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
@@ -122,11 +163,56 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
             }
         }
         
-        AudioBrain.instance.getTrack(by: trackId, title: song.title) {
+        AudioBrain.instance.fetchTrackURL(by: trackId) { [weak self] url, duration in
+            guard let self = self, let url = url, let duration = duration else {
+                DispatchQueue.main.async {
+                    self?.isLoadingSong = false
+                }
+                return
+            }
+            
             DispatchQueue.main.async {
-                self.isLoadingSong = false
+                AudioPlayerManager.shared.loadTrack(from: url, duration: duration, title: song.title)
                 AudioPlayerManager.shared.play()
                 self.isPlaying = true
+                
+                // Preload next song
+                self.preloadNextSong()
+                
+                // Reset loading flag after a short delay to ensure observers don't trigger auto-advance logic
+                // for this manual load.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.isLoadingSong = false
+                }
+            }
+        }
+    }
+    
+    private func preloadNextSong() {
+        guard currentQueueIndex < playbackQueue.count - 1 else {
+            // If repeat all is on and we are at the end, preload the first song
+            if repeatMode == .all && !playbackQueue.isEmpty {
+                 let nextSong = playbackQueue[0]
+                 let trackId = (nextSong.himnarioVersion == "Antiguo" || nextSong.pistaID.isEmpty) ? nextSong.himnoID : nextSong.himnoID
+                 AudioBrain.instance.fetchTrackURL(by: trackId) { url, _ in
+                     if let url = url {
+                         DispatchQueue.main.async {
+                             AudioPlayerManager.shared.appendTrack(url: url)
+                         }
+                     }
+                 }
+            }
+            return
+        }
+        
+        let nextSong = playbackQueue[currentQueueIndex + 1]
+        let trackId = (nextSong.himnarioVersion == "Antiguo" || nextSong.pistaID.isEmpty) ? nextSong.himnoID : nextSong.himnoID
+        
+        AudioBrain.instance.fetchTrackURL(by: trackId) { url, _ in
+            if let url = url {
+                DispatchQueue.main.async {
+                    AudioPlayerManager.shared.appendTrack(url: url)
+                }
             }
         }
     }
@@ -141,6 +227,11 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
     
     func nextSong() {
         guard !playbackQueue.isEmpty, !isLoadingSong else { return }
+        
+        // If we are using AVQueuePlayer, we might be able to just advance
+        // But for now, let's keep the manual control for explicit "Next" button presses
+        // to ensure UI state stays consistent.
+        
         currentQueueIndex = (currentQueueIndex + 1) % playbackQueue.count
         currentSong = playbackQueue[currentQueueIndex]
         DispatchQueue.main.async { self.playCurrentSong() }
@@ -220,28 +311,59 @@ class PlaylistAudioState: ObservableObject, PlaybackCompletionDelegate {
             currentQueueIndex = 0
             self.currentSong = playbackQueue[currentQueueIndex]
         }
+        
+        // Clear the AVQueuePlayer's future items (keeping the current one playing)
+        // and preload the NEW next song from our updated queue.
+        AudioPlayerManager.shared.clearQueue(keepCurrent: true)
+        preloadNextSong()
+    }
+    
+    private func handleTrackChange(newItem: AVPlayerItem?) {
+        // This is called when AVQueuePlayer advances automatically OR when we manually load a track
+        
+        guard let newItem = newItem else {
+            // Queue finished (currentItem is nil)
+            if !isLoadingSong && isPlaying {
+                // Handle end of playlist
+                if repeatMode == .all {
+                    // Loop back to start
+                    // But wait, if we preloaded correctly, this shouldn't happen for RepeatAll unless preloading failed.
+                    // Or if we are at the very end.
+                    // Let's just trigger nextSong() which handles wrapping.
+                     nextSong()
+                } else {
+                    isPlaying = false
+                    AudioPlayerManager.shared.stop()
+                }
+            }
+            return
+        }
+        
+        // If we are manually loading a song (isLoadingSong == true), we expect the item to change.
+        // We don't need to update the index because playCurrentSong already set it.
+        if isLoadingSong {
+            return
+        }
+        
+        // If we are NOT loading manually, this is an auto-advance.
+        // We need to update the index to the next one.
+        
+        let nextIndex = (currentQueueIndex + 1) % playbackQueue.count
+        
+        // Update state to reflect the new song
+        currentQueueIndex = nextIndex
+        currentSong = playbackQueue[currentQueueIndex]
+        
+        print("PlaylistAudioPlayer: Auto-advanced to \(currentSong?.title ?? "Unknown") at index \(currentQueueIndex)")
+        
+        // Preload the NEXT one (after the one that just started)
+        preloadNextSong()
     }
     
     // MARK: - PlaybackCompletionDelegate
     func trackDidComplete() {
-        // Handle auto-advance based on repeat mode
-        switch repeatMode {
-        case .off:
-            // Move to next song, stop if at end
-            if currentQueueIndex < playbackQueue.count - 1 {
-                nextSong()
-            } else {
-                // End of playlist reached
-                isPlaying = false
-                AudioPlayerManager.shared.stop()
-            }
-        case .one:
-            // Repeat current song
-            playCurrentSong()
-        case .all:
-            // Move to next song, loop back to beginning if at end
-            nextSong()
-        }
+        // This is now only called explicitly or by legacy code.
+        // We don't rely on it for auto-advance anymore.
     }
 }
 
@@ -451,5 +573,3 @@ struct PlaylistNowPlayingView: View {
         }
     }
 }
-
- 
