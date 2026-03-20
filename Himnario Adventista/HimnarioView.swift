@@ -29,6 +29,8 @@ struct HimnarioView: View {
             })
             .padding(.horizontal)
             
+            PromoBannerView()
+            
             List {
                 // If the user is searching
                 if isSearching {

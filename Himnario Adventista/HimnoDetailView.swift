@@ -141,9 +141,10 @@ struct HimnoDetailView: View {
                 Spacer()
             }
             .padding(.horizontal)
-            .padding(.top, 8)
-            
             ScrollView {
+                PromoBannerView()
+                    .padding(.bottom, 8)
+                
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Letra")
