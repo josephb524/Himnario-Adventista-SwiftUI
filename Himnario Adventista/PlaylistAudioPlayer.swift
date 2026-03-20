@@ -372,31 +372,61 @@ struct MiniPlaylistAudioPlayer: View {
     @EnvironmentObject var audioState: PlaylistAudioState
     @ObservedObject var progressTimer = ProgressBarTimer.instance
     @State private var showingNowPlaying = false
+    @State private var appeared = false
     
     var body: some View {
         if let currentSong = audioState.currentSong {
             VStack(spacing: 0) {
-                // Progress bar (driven by global ProgressBarTimer)
-                ProgressView(value: progressTimer.progress, total: 1.0)
-                    .progressViewStyle(LinearProgressViewStyle(tint: Colors.shared.getCurrentAccentColor()))
-                    .scaleEffect(x: 1, y: 0.5, anchor: .center)
+                // Thicker progress bar
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Rectangle()
+                            .fill(Colors.shared.getCurrentAccentColor().opacity(0.15))
+                        
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Colors.shared.getCurrentAccentColor(),
+                                        Colors.shared.getCurrentAccentColor().opacity(0.7)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: geo.size.width * CGFloat(progressTimer.progress))
+                            .animation(.linear(duration: 0.3), value: progressTimer.progress)
+                    }
+                }
+                .frame(height: 3)
                 
                 // Player controls
                 HStack(spacing: 12) {
-                    // Song artwork placeholder
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.secondary.opacity(0.3))
-                        .frame(width: 40, height: 40)
-                        .overlay(
-                            Image(systemName: "music.note")
-                                .foregroundColor(.secondary)
-                        )
+                    // Accent-colored mini album art
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Colors.shared.getCurrentAccentColor().opacity(0.25),
+                                        Colors.shared.getCurrentAccentColor().opacity(0.1)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 44, height: 44)
+                        
+                        Image(systemName: "music.note")
+                            .font(.subheadline)
+                            .foregroundColor(Colors.shared.getCurrentAccentColor())
+                    }
                     
                     // Song info
                     VStack(alignment: .leading, spacing: 2) {
                         Text(currentSong.title)
                             .font(.subheadline)
-                            .fontWeight(.medium)
+                            .fontWeight(.semibold)
                             .lineLimit(1)
                         
                         Text(currentSong.himnarioVersion)
@@ -409,28 +439,37 @@ struct MiniPlaylistAudioPlayer: View {
                     
                     // Play/Pause button
                     Button(action: audioState.togglePlayPause) {
-                        Image(systemName: audioState.isPlaying ? "pause.fill" : "play.fill")
-                            .font(.title2)
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
+                        ZStack {
+                            Circle()
+                                .fill(Colors.shared.getCurrentAccentColor().opacity(0.12))
+                                .frame(width: 36, height: 36)
+                            
+                            Image(systemName: audioState.isPlaying ? "pause.fill" : "play.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(Colors.shared.getCurrentAccentColor())
+                        }
                     }
                     
                     // Next button
                     Button(action: audioState.nextSong) {
                         Image(systemName: "forward.fill")
-                            .font(.title3)
+                            .font(.subheadline)
                             .foregroundColor(.primary)
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color(.systemBackground))
+                .padding(.vertical, 10)
                 .contentShape(Rectangle())
                 .onTapGesture {
                     showingNowPlaying = true
                 }
             }
-            .background(Color(.systemBackground))
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: -2)
+            .background(.ultraThinMaterial)
+            .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: -3)
+            .offset(y: appeared ? 0 : 60)
+            .opacity(appeared ? 1 : 0)
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: appeared)
+            .onAppear { appeared = true }
             .sheet(isPresented: $showingNowPlaying) {
                 PlaylistNowPlayingView()
                     .environmentObject(audioState)
@@ -444,124 +483,285 @@ struct PlaylistNowPlayingView: View {
     @EnvironmentObject var audioState: PlaylistAudioState
     @ObservedObject var progressTimer = ProgressBarTimer.instance
     @Environment(\.dismiss) private var dismiss
+    @State private var isPulsing = false
+    
+    private var accentColor: Color {
+        Colors.shared.getCurrentAccentColor()
+    }
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 30) {
-                // Large artwork
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.secondary.opacity(0.2))
-                    .frame(width: 280, height: 280)
-                    .overlay(
+            ZStack {
+                // Subtle gradient background
+                LinearGradient(
+                    colors: [
+                        accentColor.opacity(0.08),
+                        Color(.systemBackground),
+                        Color(.systemBackground)
+                    ],
+                    startPoint: .top,
+                    endPoint: .center
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    // Pull-down indicator
+                    Capsule()
+                        .fill(Color.secondary.opacity(0.4))
+                        .frame(width: 36, height: 5)
+                        .padding(.top, 8)
+                        .padding(.bottom, 16)
+                    
+                    Spacer()
+                    
+                    // Large artwork with pulsing ring
+                    ZStack {
+                        // Outer pulsing ring (only when playing)
+                        if audioState.isPlaying {
+                            Circle()
+                                .stroke(accentColor.opacity(0.15), lineWidth: 2)
+                                .frame(width: 290, height: 290)
+                                .scaleEffect(isPulsing ? 1.05 : 1.0)
+                                .opacity(isPulsing ? 0.0 : 0.6)
+                                .animation(
+                                    .easeInOut(duration: 1.8).repeatForever(autoreverses: false),
+                                    value: isPulsing
+                                )
+                        }
+                        
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        accentColor.opacity(0.3),
+                                        accentColor.opacity(0.12),
+                                        accentColor.opacity(0.05)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 260, height: 260)
+                        
+                        // Radial highlight
+                        RoundedRectangle(cornerRadius: 28, style: .continuous)
+                            .fill(
+                                RadialGradient(
+                                    gradient: Gradient(colors: [
+                                        accentColor.opacity(0.12),
+                                        Color.clear
+                                    ]),
+                                    center: .topLeading,
+                                    startRadius: 0,
+                                    endRadius: 250
+                                )
+                            )
+                            .frame(width: 260, height: 260)
+                        
                         Image(systemName: "music.note")
-                            .font(.system(size: 80))
+                            .font(.system(size: 70, weight: .ultraLight))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [accentColor, accentColor.opacity(0.5)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                    }
+                    .shadow(color: accentColor.opacity(0.2), radius: 20, x: 0, y: 10)
+                    .onAppear { isPulsing = true }
+                    
+                    Spacer()
+                        .frame(height: 36)
+                    
+                    // Song info
+                    VStack(spacing: 6) {
+                        Text(audioState.currentSong?.title ?? "Canción desconocida")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                        
+                        Text(audioState.currentSong?.himnarioVersion ?? "Desconocido")
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
-                    )
-                    .shadow(color: Color.black.opacity(0.2), radius: 10)
-                
-                // Song info
-                VStack(spacing: 8) {
-                    Text(audioState.currentSong?.title ?? "Unknown Song")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 24)
                     
-                    Text(audioState.currentSong?.himnarioVersion ?? "Unknown Album")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal)
-                
-                // Progress section
-                VStack(spacing: 8) {
-                    Slider(value: Binding(
-                        get: { progressTimer.progress },
-                        set: { audioState.seek(to: $0) }
-                    ), in: 0...1)
-                    .accentColor(Colors.shared.getCurrentAccentColor())
+                    Spacer()
+                        .frame(height: 28)
                     
-                    HStack {
-                        Text(progressTimer.formattedCurrentTime)
+                    // Progress section
+                    VStack(spacing: 6) {
+                        // Custom progress bar
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color.secondary.opacity(0.15))
+                                    .frame(height: 6)
+                                
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [accentColor, accentColor.opacity(0.7)],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: max(6, geo.size.width * CGFloat(progressTimer.progress)), height: 6)
+                                    .animation(.linear(duration: 0.3), value: progressTimer.progress)
+                            }
+                            .gesture(
+                                DragGesture(minimumDistance: 0)
+                                    .onChanged { value in
+                                        let pos = min(max(0, value.location.x / geo.size.width), 1)
+                                        audioState.seek(to: pos)
+                                    }
+                            )
+                        }
+                        .frame(height: 6)
+                        
+                        HStack {
+                            Text(progressTimer.formattedCurrentTime)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                            
+                            Spacer()
+                            
+                            Text(progressTimer.formattedRemainingTime)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
+                    }
+                    .padding(.horizontal, 28)
+                    
+                    Spacer()
+                        .frame(height: 28)
+                    
+                    // Main controls
+                    HStack(spacing: 36) {
+                        // Previous
+                        Button(action: audioState.previousSong) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.secondary.opacity(0.08))
+                                    .frame(width: 52, height: 52)
+                                
+                                Image(systemName: "backward.fill")
+                                    .font(.title3)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        
+                        // Play/Pause
+                        Button(action: audioState.togglePlayPause) {
+                            ZStack {
+                                Circle()
+                                    .fill(accentColor)
+                                    .frame(width: 72, height: 72)
+                                    .shadow(color: accentColor.opacity(0.3), radius: 10, x: 0, y: 5)
+                                
+                                Image(systemName: audioState.isPlaying ? "pause.fill" : "play.fill")
+                                    .font(.system(size: 28, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        // Next
+                        Button(action: audioState.nextSong) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.secondary.opacity(0.08))
+                                    .frame(width: 52, height: 52)
+                                
+                                Image(systemName: "forward.fill")
+                                    .font(.title3)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                        .frame(height: 24)
+                    
+                    // Additional controls (shuffle & repeat)
+                    HStack(spacing: 50) {
+                        // Shuffle
+                        Button(action: { audioState.toggleShuffle() }) {
+                            VStack(spacing: 4) {
+                                Image(systemName: "shuffle")
+                                    .font(.body)
+                                    .foregroundColor(audioState.isShuffled ? accentColor : .secondary)
+                                
+                                Circle()
+                                    .fill(audioState.isShuffled ? accentColor : Color.clear)
+                                    .frame(width: 4, height: 4)
+                            }
+                        }
+                        
+                        // Repeat
+                        Button(action: {
+                            let allCases = PlaylistAudioState.RepeatMode.allCases
+                            let currentIdx = allCases.firstIndex(of: audioState.repeatMode) ?? 0
+                            audioState.repeatMode = allCases[(currentIdx + 1) % allCases.count]
+                        }) {
+                            VStack(spacing: 4) {
+                                Image(systemName: audioState.repeatMode.systemImage)
+                                    .font(.body)
+                                    .foregroundColor(audioState.repeatMode != .off ? accentColor : .secondary)
+                                
+                                Circle()
+                                    .fill(audioState.repeatMode != .off ? accentColor : Color.clear)
+                                    .frame(width: 4, height: 4)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                        .frame(height: 20)
+                    
+                    // Volume control
+                    HStack(spacing: 10) {
+                        Image(systemName: "speaker.fill")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        Spacer()
+                        Slider(value: Binding(
+                            get: { audioState.volume },
+                            set: { audioState.volume = $0 }
+                        ), in: 0...1)
+                        .accentColor(accentColor)
                         
-                        Text(progressTimer.formattedRemainingTime)
+                        Image(systemName: "speaker.wave.3.fill")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
+                    .padding(.horizontal, 28)
+                    
+                    Spacer()
                 }
-                .padding(.horizontal)
-                
-                // Main controls
-                HStack(spacing: 40) {
-                    Button(action: audioState.previousSong) {
-                        Image(systemName: "backward.fill")
-                            .font(.title)
-                            .foregroundColor(.primary)
-                    }
-                    
-                    Button(action: audioState.togglePlayPause) {
-                        Image(systemName: audioState.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                            .font(.system(size: 64))
-                            .foregroundColor(Colors.shared.getCurrentAccentColor())
-                    }
-                    
-                    Button(action: audioState.nextSong) {
-                        Image(systemName: "forward.fill")
-                            .font(.title)
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                // Additional controls
-                HStack(spacing: 50) {
-                    Button(action: { audioState.toggleShuffle() }) {
-                        Image(systemName: "shuffle")
-                            .font(.title3)
-                            .foregroundColor(audioState.isShuffled ? Colors.shared.getCurrentAccentColor() : .secondary)
-                    }
-                    
-                    Button(action: { audioState.repeatMode = PlaylistAudioState.RepeatMode.allCases[(PlaylistAudioState.RepeatMode.allCases.firstIndex(of: audioState.repeatMode) ?? 0 + 1) % PlaylistAudioState.RepeatMode.allCases.count] }) {
-                        Image(systemName: audioState.repeatMode.systemImage)
-                            .font(.title3)
-                            .foregroundColor(audioState.repeatMode != .off ? Colors.shared.getCurrentAccentColor() : .secondary)
-                    }
-                }
-                
-                // Volume control
-                HStack(spacing: 12) {
-                    Image(systemName: "speaker.fill")
-                        .foregroundColor(.secondary)
-                    
-                    Slider(value: Binding(
-                        get: { audioState.volume },
-                        set: { audioState.volume = $0 }
-                    ), in: 0...1)
-                    .accentColor(Colors.shared.getCurrentAccentColor())
-                    
-                    Image(systemName: "speaker.wave.3.fill")
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal)
-                
-                Spacer()
             }
-            .padding()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
-                        dismiss()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.down")
+                            .font(.body.weight(.medium))
+                            .foregroundColor(.secondary)
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if let playlist = audioState.currentPlaylist, !playlist.isSystemPlaylist {
                         Menu {
-                            Button("Add to Playlist", action: {})
-                            Button("Share", action: {})
+                            Button(action: {}) {
+                                Label("Añadir a Playlist", systemImage: "text.badge.plus")
+                            }
+                            Button(action: {}) {
+                                Label("Compartir", systemImage: "square.and.arrow.up")
+                            }
                         } label: {
                             Image(systemName: "ellipsis.circle")
                         }

@@ -9,6 +9,7 @@ struct AddToPlaylistView: View {
     @State private var selectedHimnario = "Himnario Nuevo"
     @State private var searchText = ""
     @State private var selectedSongs: Set<String> = []
+    @FocusState private var isSearchFocused: Bool
     
     private let himnarios = ["Himnario Nuevo", "Himnario Antiguo"]
     
@@ -51,22 +52,48 @@ struct AddToPlaylistView: View {
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
                 
                 // Search bar
-                HStack {
+                HStack(spacing: 10) {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                        .foregroundColor(isSearchFocused ? Colors.shared.getCurrentAccentColor() : .secondary)
+                        .animation(.easeInOut(duration: 0.2), value: isSearchFocused)
                     
                     TextField("Buscar himnos...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
+                        .font(.subheadline)
+                        .focused($isSearchFocused)
+                    
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
                 .background(Color(.systemGray6))
-                .cornerRadius(10)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            isSearchFocused
+                                ? Colors.shared.getCurrentAccentColor().opacity(0.4)
+                                : Color.clear,
+                            lineWidth: 1
+                        )
+                )
                 .padding(.horizontal)
-                .padding(.bottom)
+                .padding(.bottom, 8)
+                .animation(.easeInOut(duration: 0.2), value: isSearchFocused)
+                .animation(.easeInOut(duration: 0.2), value: searchText.isEmpty)
                 
                 // Songs list
                 List(availableHimnos, id: \.himnoID) { himno in
@@ -74,32 +101,69 @@ struct AddToPlaylistView: View {
                         himno: himno,
                         isSelected: selectedSongs.contains(himno.himnoID)
                     ) {
-                        toggleSelection(for: himno)
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            toggleSelection(for: himno)
+                        }
                     }
                 }
                 .listStyle(.plain)
                 
-                // Selected count and add button
+                // Floating bottom bar
                 if !selectedSongs.isEmpty {
                     VStack(spacing: 0) {
                         Divider()
                         
-                        HStack {
-                            Text("\(selectedSongs.count) canción\(selectedSongs.count == 1 ? "" : "es") seleccionada\(selectedSongs.count == 1 ? "" : "s")")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                        HStack(spacing: 12) {
+                            // Count badge
+                            HStack(spacing: 6) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Colors.shared.getCurrentAccentColor())
+                                        .frame(width: 24, height: 24)
+                                    
+                                    Text("\(selectedSongs.count)")
+                                        .font(.caption2.weight(.bold))
+                                        .foregroundColor(.white)
+                                }
+                                
+                                Text("seleccionada\(selectedSongs.count == 1 ? "" : "s")")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                             
                             Spacer()
                             
-                            Button("Añadir") {
-                                addSelectedSongs()
+                            Button(action: addSelectedSongs) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.subheadline)
+                                    Text("Añadir")
+                                        .fontWeight(.semibold)
+                                }
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(
+                                    LinearGradient(
+                                        colors: [
+                                            Colors.shared.getCurrentAccentColor(),
+                                            Colors.shared.getCurrentAccentColor().opacity(0.8)
+                                        ],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .clipShape(Capsule())
+                                .shadow(color: Colors.shared.getCurrentAccentColor().opacity(0.3), radius: 4, x: 0, y: 2)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .tint(Colors.shared.getCurrentAccentColor())
+                            .buttonStyle(.plain)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        .background(.ultraThinMaterial)
                     }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .navigationTitle("Añadir a \(targetPlaylist.name)")
@@ -148,6 +212,7 @@ struct AddToPlaylistView: View {
     }
 }
 
+// MARK: - Add Song Row
 struct AddSongRow: View {
     let himno: Himnario
     let isSelected: Bool
@@ -156,17 +221,46 @@ struct AddSongRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                // Selection indicator
+                // Selection indicator with checkmark animation
                 ZStack {
                     Circle()
-                        .stroke(isSelected ? Colors.shared.getCurrentAccentColor() : Color.secondary, lineWidth: 2)
-                        .frame(width: 20, height: 20)
+                        .stroke(
+                            isSelected ? Colors.shared.getCurrentAccentColor() : Color.secondary.opacity(0.4),
+                            lineWidth: 2
+                        )
+                        .frame(width: 24, height: 24)
                     
                     if isSelected {
                         Circle()
                             .fill(Colors.shared.getCurrentAccentColor())
-                            .frame(width: 12, height: 12)
+                            .frame(width: 24, height: 24)
+                            .transition(.scale)
+                        
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .transition(.scale.combined(with: .opacity))
                     }
+                }
+                
+                // Mini artwork thumbnail
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    (isSelected ? Colors.shared.getCurrentAccentColor() : Color.secondary).opacity(0.15),
+                                    (isSelected ? Colors.shared.getCurrentAccentColor() : Color.secondary).opacity(0.06)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: "music.note")
+                        .font(.caption)
+                        .foregroundColor(isSelected ? Colors.shared.getCurrentAccentColor() : .secondary)
                 }
                 
                 // Song info
@@ -184,7 +278,7 @@ struct AddSongRow: View {
                 
                 Spacer()
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 4)
         }
         .buttonStyle(PlainButtonStyle())
     }
