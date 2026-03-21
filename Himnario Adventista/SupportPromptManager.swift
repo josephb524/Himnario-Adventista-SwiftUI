@@ -26,8 +26,8 @@ class SupportPromptManager: ObservableObject {
     
     // MARK: - Smart Thresholds
     // Show on every launch by default, but respect "No, gracias" with a longer delay
-    private let defaultAppLaunchTrigger = 1     // Show after every app launch (default/"Más tarde")
-    private let noThanksAppLaunchTrigger = 5    // Show after 5 app launches if user said "No, gracias"
+    private let defaultAppLaunchTrigger = 25     // Show after every app launch (default/"Más tarde")
+    private let noThanksAppLaunchTrigger = 50    // Show after 5 app launches if user said "No, gracias"
     
     // MARK: - UserDefaults Properties
     @AppStorage(SupportKeys.appLaunchCount) private var appLaunchCount = 0
