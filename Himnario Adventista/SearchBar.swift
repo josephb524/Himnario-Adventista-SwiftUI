@@ -68,7 +68,12 @@ struct SearchBar: UIViewRepresentable {
             textField.backgroundColor = .systemBackground
             textField.font = UIFont.systemFont(ofSize: 17)
             textField.layer.cornerRadius = 25
-            textField.clipsToBounds = true
+            textField.clipsToBounds = false  // Allow border shadow to show
+            
+            // Visible border
+            textField.layer.borderWidth = 1.5
+            textField.layer.borderColor = UIColor.systemGray4.cgColor
+            textField.layer.masksToBounds = true
             
             // Add magnifying glass icon on the left
             let searchIcon = UIImageView(image: UIImage(systemName: "magnifyingglass"))

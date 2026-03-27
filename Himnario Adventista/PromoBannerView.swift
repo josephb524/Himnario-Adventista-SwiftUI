@@ -18,7 +18,7 @@ struct PromoBannerView: View {
                     UIApplication.shared.open(url)
                 }
             }) {
-                HStack(spacing: 12) {
+                HStack(spacing: 16) {
                     // App icon image
                     AsyncImage(url: URL(string: banner.imageURL)) { phase in
                         switch phase {
@@ -26,20 +26,20 @@ struct PromoBannerView: View {
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
-                                .frame(width: 50, height: 50)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .frame(width: 64, height: 64)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
                         case .failure:
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: 14)
                                 .fill(Color.gray.opacity(0.3))
-                                .frame(width: 50, height: 50)
+                                .frame(width: 64, height: 64)
                                 .overlay(
                                     Image(systemName: "app.fill")
                                         .foregroundColor(.gray)
                                 )
                         case .empty:
-                            RoundedRectangle(cornerRadius: 12)
+                            RoundedRectangle(cornerRadius: 14)
                                 .fill(Color.gray.opacity(0.15))
-                                .frame(width: 50, height: 50)
+                                .frame(width: 64, height: 64)
                                 .overlay(ProgressView())
                         @unknown default:
                             EmptyView()
@@ -47,15 +47,16 @@ struct PromoBannerView: View {
                     }
                     
                     // Title and subtitle
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(banner.title)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
+                            .font(.body)
+                            .fontWeight(.bold)
                             .foregroundColor(.primary)
                         
                         Text(banner.subtitle)
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
+                            .lineLimit(2)
                     }
                     
                     Spacer()
@@ -67,22 +68,26 @@ struct PromoBannerView: View {
                         }
                     }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(.secondary)
+                            .font(.title2)
+                            .foregroundColor(.secondary.opacity(0.7))
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(12)
+                .padding(16)
                 .background(
-                    RoundedRectangle(cornerRadius: 14)
+                    RoundedRectangle(cornerRadius: 18)
                         .fill(Color(.secondarySystemBackground))
-                        .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+                        .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
                 )
                 .padding(.horizontal)
-                .padding(.top, 4)
+                .padding(.top, 6)
             }
             .buttonStyle(.plain)
             .transition(.opacity.combined(with: .move(edge: .top)))
+            .onAppear {
+                // Reset dismissal each time this view appears (e.g. navigating back to the page)
+                isDismissed = false
+            }
         }
     }
 }

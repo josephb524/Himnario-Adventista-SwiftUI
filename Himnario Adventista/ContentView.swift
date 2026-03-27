@@ -50,6 +50,7 @@ struct ContentView: View {
                             .id(selectedHimnario)
                     }
                     .navigationTitle("Himnario")
+                    .navigationBarTitleDisplayMode(.inline)
                     .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
                     .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .tabBar)
                     .toolbarBackground(.visible, for: .navigationBar)

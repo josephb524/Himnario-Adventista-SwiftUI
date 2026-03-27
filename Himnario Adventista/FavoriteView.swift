@@ -92,6 +92,7 @@ struct FavoriteView: View {
                 .padding(2)
             }
             .navigationTitle("Favoritos")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Colors.shared.getNavigationBarGradient(), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }

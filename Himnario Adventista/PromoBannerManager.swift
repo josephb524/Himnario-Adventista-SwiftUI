@@ -45,26 +45,39 @@ class PromoBannerManager: ObservableObject {
     // MARK: - Public
     
     func fetchBanners() {
-        let task = session.dataTask(with: bannerURL) { [weak self] data, response, error in
+        // Append a timestamp to bust GitHub's CDN cache (it ignores client-side cache policies)
+        let cacheBustedURL = URL(string: "\(bannerURL.absoluteString)?t=\(Int(Date().timeIntervalSince1970))")!
+        var request = URLRequest(url: cacheBustedURL)
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+
+        let task = session.dataTask(with: request) { [weak self] data, response, error in
             guard let self = self else { return }
-            
-            guard let data = data, error == nil else {
-                print("[PromoBannerManager] Fetch failed: \(error?.localizedDescription ?? "Unknown error")")
+
+            guard let data = data,
+                  let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("[PromoBannerManager] Fetch failed: \(error?.localizedDescription ?? "HTTP error")")
                 return
             }
-            
+
             do {
                 let decoded = try JSONDecoder().decode(PromoBannerResponse.self, from: data)
                 let activeBanners = decoded.banners.filter { $0.isActive }
-                
+
+                // Cache the raw JSON for offline use
+                UserDefaults.standard.set(data, forKey: self.cacheKey)
+
                 DispatchQueue.main.async {
                     self.banners = activeBanners
+                    print("[PromoBannerManager] Loaded \(activeBanners.count) active banner(s)")
                 }
-                
-                // Cache the raw data for offline use
-                self.cacheBannerData(data)
             } catch {
-                print("[PromoBannerManager] Decode failed: \(error.localizedDescription)")
+                print("[PromoBannerManager] JSON decode error: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.banners = []
+                }
             }
         }
         task.resume()
